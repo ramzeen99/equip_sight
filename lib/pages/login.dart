@@ -235,7 +235,7 @@ class _LoginState extends State<Login> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SocialLoginButton(
-                                asset: 'images/google.png',
+                                asset: 'assets/images/google.png',
                                 onTap: () async {
                                   setState(() => showSpinner = true);
                                   try {

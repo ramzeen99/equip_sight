@@ -1,12 +1,13 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry_lens/components/button_login_signup.dart';
-import 'package:laundry_lens/constants.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:laundry_lens/components/title_app_design.dart';
+import 'package:laundry_lens/constants.dart';
 import 'package:laundry_lens/pages/login.dart';
 import 'package:laundry_lens/pages/registration.dart';
-import 'package:provider/provider.dart';
 import 'package:laundry_lens/providers/user_provider.dart';
+import 'package:provider/provider.dart';
+
 import 'index.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -89,7 +90,7 @@ class _OnboardingPageState extends State<OnboardingPage>
         child: Container(
           decoration: BoxDecoration(
             image: const DecorationImage(
-              image: AssetImage('images/background_onboarding.jpeg'),
+              image: AssetImage('assets/images/background_onboarding.jpeg'),
               fit: BoxFit.cover,
             ),
           ),
