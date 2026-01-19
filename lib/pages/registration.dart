@@ -53,7 +53,6 @@ class AppUser {
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
-
 }
 
 class Registration extends StatefulWidget {
@@ -125,7 +124,7 @@ class _RegistrationState extends State<Registration> {
         .doc(countryId)
         .collection('cities')
         .doc(cityId)
-        .collection('Universities')
+        .collection('universities')
         .get();
     setState(() {
       universities = snapshot.docs.map((doc) => doc.id).toList();
@@ -145,7 +144,7 @@ class _RegistrationState extends State<Registration> {
         .doc(countryId)
         .collection('cities')
         .doc(cityId)
-        .collection('Universities')
+        .collection('universities')
         .doc(universityId)
         .collection('dorms')
         .get();
