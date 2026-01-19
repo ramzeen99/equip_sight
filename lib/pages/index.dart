@@ -346,9 +346,12 @@ class _IndexPageState extends State<IndexPage> {
     );
   }
 
-  void _performLogout() {
+  void _performLogout() async {
     final userProvider = context.read<UserProvider>();
-    userProvider.signOut();
+    await userProvider.signOut();
+    if(context.mounted) {
+      Navigator.pushReplacementNamed(context, OnboardingPage.id);
+    }
   }
 
   @override

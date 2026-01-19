@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:laundry_lens/model/user_model.dart';
 
 class UserProvider with ChangeNotifier {
@@ -13,6 +13,12 @@ class UserProvider with ChangeNotifier {
   String? get error => _error;
   bool get isLoggedIn => _currentUser != null;
 
+  String? get role => _currentUser?.role;
+
+  String? get universityId => _currentUser?.universityId;
+
+  String? get dormId => _currentUser?.dormId;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -23,7 +29,7 @@ class UserProvider with ChangeNotifier {
   /// Écoute les changements d'état d'authentification
   void _initializeAuthListener() {
     _auth.authStateChanges().listen(
-          (User? user) async {
+      (User? user) async {
         _isLoading = true;
         notifyListeners();
 
@@ -57,7 +63,10 @@ class UserProvider with ChangeNotifier {
         );
       } else {
         _currentUser = AppUser.fromFirebaseUser(user);
-        await _firestore.collection('users').doc(user.uid).set(_currentUser!.toMap());
+        await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .set(_currentUser!.toMap());
       }
     } catch (e) {
       _error = "Erreur chargement Firestore user: $e";
@@ -80,7 +89,9 @@ class UserProvider with ChangeNotifier {
     try {
       if (_auth.currentUser == null) return;
 
-      if (displayName != null) await _auth.currentUser!.updateDisplayName(displayName);
+      if (displayName != null) {
+        await _auth.currentUser!.updateDisplayName(displayName);
+      }
       if (photoURL != null) await _auth.currentUser!.updatePhotoURL(photoURL);
 
       await _auth.currentUser!.reload();
@@ -146,8 +157,14 @@ class UserProvider with ChangeNotifier {
   /// Déconnexion
   Future<void> signOut() async {
     try {
+      // 1️⃣ Déconnexion Firebase
       await _auth.signOut();
+
+      // 2️⃣ Réinitialisation du provider
       _currentUser = null;
+
+      // 3️⃣ Forcer un refresh pour éviter que authStateChanges reload l'ancien utilisateur
+      _isLoading = false;
       notifyListeners();
     } catch (e) {
       _error = "Erreur signOut: $e";
@@ -168,7 +185,6 @@ class UserProvider with ChangeNotifier {
     return "countries/${_currentUser!.pays}/cities/${_currentUser!.ville}/Universities/${_currentUser!.universite}/dorms/${_currentUser!.dortoir}/machines";
   }
 }
-
 
 /*import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';

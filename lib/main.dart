@@ -1,4 +1,5 @@
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:laundry_lens/providers/preferences_provider.dart';
 import 'package:laundry_lens/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'components/role_router.dart';
 import 'pages/home_locked.dart';
 import 'pages/onboarding.dart';
 import 'services/local_notification_service.dart';
@@ -96,36 +98,29 @@ class MyApp extends StatelessWidget {
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+
     if (userProvider.isLoading) {
-      return Scaffold(
-        backgroundColor: Color(0xFF459380),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Загрузка...',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
-    if (userProvider.isLoggedIn && userProvider.currentUser != null) {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+
+    if (firebaseUser != null && userProvider.currentUser != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, IndexPage.id);
+        navigateByRole(
+          context,
+          userProvider.role,
+          universityId: userProvider.universityId,
+          dormId: userProvider.dormId,
+        );
       });
       return const SizedBox();
     }
+
     return HomeLockedPage();
   }
 }

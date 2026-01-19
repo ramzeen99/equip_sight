@@ -19,6 +19,9 @@ class AppUser {
   final String? universite;
   final String? dortoir;
   final bool? emailVerified;
+  final String role;
+  final String? universityId;
+  final String? dormId;
 
   AppUser({
     required this.id,
@@ -29,6 +32,9 @@ class AppUser {
     this.universite,
     this.dortoir,
     this.emailVerified,
+    required this.role,
+    this.universityId,
+    this.dormId,
   });
 
   Map<String, dynamic> toMap() {
@@ -41,8 +47,13 @@ class AppUser {
       'universite': universite,
       'dortoir': dortoir,
       'emailVerified': emailVerified,
+      'role': role,
+      'universityId': universityId,
+      'dormId': dormId,
+      'createdAt': FieldValue.serverTimestamp(),
     };
   }
+
 }
 
 class Registration extends StatefulWidget {
@@ -459,6 +470,9 @@ class _RegistrationState extends State<Registration> {
           universite: selectedUniversity,
           dortoir: selectedDorm,
           emailVerified: newUser.user!.emailVerified,
+          role: 'user', // IMPORTANT
+          universityId: selectedUniversity,
+          dormId: selectedDorm,
         );
 
         await _firestore
