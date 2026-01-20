@@ -1,6 +1,6 @@
 
 <p style="text-align: center;">
-  <img src="equip_sight.png" alt="EquipSight Banner" width="1200">
+  <img src="assets/images/equip_sight.jpg" alt="EquipSight Banner" width="1200">
 </p>
 
 # 🧺 EquipSight
@@ -248,7 +248,7 @@ MIT License.
 
 <p style="text-align: center;">
   <!-- Replace this later with a more modern and redesigned banner -->
-  <img src="equip_sight.png" alt="EquipSight Banner" width="1200">
+  <img src="assets/images/equip_sight.jpg" alt="EquipSight Banner" width="1200">
 </p>
 
 > 🎨 **Design placeholder** — A more elegant, modern banner will be added here later  
