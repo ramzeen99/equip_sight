@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equip_sight/components/title_app_design.dart';
+import 'package:equip_sight/pages/help_page.dart';
+import 'package:equip_sight/pages/onboarding.dart';
+import 'package:equip_sight/providers/preferences_provider.dart';
+import 'package:equip_sight/providers/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry_lens/components/title_app_design.dart';
-import 'package:laundry_lens/pages/help_page.dart';
-import 'package:laundry_lens/pages/onboarding.dart';
-import 'package:laundry_lens/providers/preferences_provider.dart';
-import 'package:laundry_lens/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../components/machine_card.dart';
@@ -349,7 +349,7 @@ class _IndexPageState extends State<IndexPage> {
   void _performLogout() async {
     final userProvider = context.read<UserProvider>();
     await userProvider.signOut();
-    if(context.mounted) {
+    if (context.mounted) {
       Navigator.pushReplacementNamed(context, OnboardingPage.id);
     }
   }
@@ -386,7 +386,7 @@ class _IndexPageState extends State<IndexPage> {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        title: const TitleAppDesign(textTitle: 'LAUNDRY LENS'),
+        title: const TitleAppDesign(textTitle: 'EquipSight'),
         actions: [
           _isRefreshing
               ? const Padding(

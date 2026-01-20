@@ -1,7 +1,7 @@
+import 'package:equip_sight/model/preferences_model.dart';
+import 'package:equip_sight/providers/preferences_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:laundry_lens/providers/preferences_provider.dart';
-import 'package:laundry_lens/model/preferences_model.dart';
 
 class SettingsPage extends StatelessWidget {
   static const String id = 'Settings';
@@ -26,7 +26,7 @@ class SettingsPage extends StatelessWidget {
                 'Завершение стирки',
                 'Оповещения, когда стирка завершена',
                 prefs.machineFinished,
-                    (value) => _updatePreference(
+                (value) => _updatePreference(
                   context,
                   prefs.copyWith(machineFinished: value),
                 ),
@@ -35,7 +35,7 @@ class SettingsPage extends StatelessWidget {
                 'Свободные машины',
                 'Оповещения, когда машина освободилась',
                 prefs.machineAvailable,
-                    (value) => _updatePreference(
+                (value) => _updatePreference(
                   context,
                   prefs.copyWith(machineAvailable: value),
                 ),
@@ -44,7 +44,7 @@ class SettingsPage extends StatelessWidget {
                 'Автонапоминания',
                 'Напоминания об освобождении машин',
                 prefs.reminders,
-                    (value) => _updatePreference(
+                (value) => _updatePreference(
                   context,
                   prefs.copyWith(reminders: value),
                 ),
@@ -57,7 +57,7 @@ class SettingsPage extends StatelessWidget {
                 'Включить звук',
                 'Звуковое сопровождение уведомлений',
                 prefs.soundEnabled,
-                    (value) => _updatePreference(
+                (value) => _updatePreference(
                   context,
                   prefs.copyWith(soundEnabled: value),
                 ),
@@ -66,7 +66,7 @@ class SettingsPage extends StatelessWidget {
                 'Включить вибрацию',
                 'Вибрация для уведомлений',
                 prefs.vibrationEnabled,
-                    (value) => _updatePreference(
+                (value) => _updatePreference(
                   context,
                   prefs.copyWith(vibrationEnabled: value),
                 ),
@@ -100,11 +100,11 @@ class SettingsPage extends StatelessWidget {
 
   // Виджет переключателя уведомлений / Widget interrupteur de notification
   Widget _buildNotificationSwitch(
-      String title,
-      String subtitle,
-      bool value,
-      Function(bool) onChanged,
-      ) {
+    String title,
+    String subtitle,
+    bool value,
+    Function(bool) onChanged,
+  ) {
     return SwitchListTile(
       title: Text(title),
       subtitle: Text(subtitle),
@@ -116,9 +116,9 @@ class SettingsPage extends StatelessWidget {
 
   // Секция избранных помещений / Section pièces favorites
   Widget _buildFavoriteRoomsSection(
-      BuildContext context,
-      NotificationPreferences prefs,
-      ) {
+    BuildContext context,
+    NotificationPreferences prefs,
+  ) {
     final rooms = [
       'Первый этаж',
       'Второй этаж',
@@ -164,9 +164,9 @@ class SettingsPage extends StatelessWidget {
 
   // Метод обновления настроек / Méthode de mise à jour des préférences
   void _updatePreference(
-      BuildContext context,
-      NotificationPreferences newPrefs,
-      ) {
+    BuildContext context,
+    NotificationPreferences newPrefs,
+  ) {
     context.read<PreferencesProvider>().updatePreference(newPrefs);
   }
 }

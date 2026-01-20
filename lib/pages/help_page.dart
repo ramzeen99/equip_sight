@@ -1,5 +1,5 @@
+import 'package:equip_sight/components/title_app_design.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry_lens/components/title_app_design.dart';
 
 // FR: Page d'aide
 // RU: Страница помощи
@@ -35,28 +35,28 @@ class HelpPage extends StatelessWidget {
                   number: 1,
                   title: 'Просмотр состояния машин',
                   description:
-                  'Главная страница показывает все машины '
+                      'Главная страница показывает все машины '
                       'и их статус (свободна, занята, завершена)',
                 ),
                 _buildStep(
                   number: 2,
                   title: 'Запуск машины',
                   description:
-                  'Нажмите на свободную машину, чтобы начать '
+                      'Нажмите на свободную машину, чтобы начать '
                       'цикл на 5 минут',
                 ),
                 _buildStep(
                   number: 3,
                   title: 'Отслеживание оставшегося времени',
                   description:
-                  'Когда машина занята, вы можете '
+                      'Когда машина занята, вы можете '
                       'видеть оставшееся время в минутах',
                 ),
                 _buildStep(
                   number: 4,
                   title: 'Освободить машину',
                   description:
-                  'Когда машина отмечена как "завершена", '
+                      'Когда машина отмечена как "завершена", '
                       'нажмите на неё, чтобы освободить',
                 ),
               ],
@@ -75,13 +75,13 @@ class HelpPage extends StatelessWidget {
                 _buildInfoItem(
                   icon: Icons.timer,
                   text:
-                  'Вы получите уведомление, когда ваша машина '
+                      'Вы получите уведомление, когда ваша машина '
                       'завершит цикл',
                 ),
                 _buildInfoItem(
                   icon: Icons.settings,
                   text:
-                  'Вы можете включить/отключить уведомления '
+                      'Вы можете включить/отключить уведомления '
                       'в настройках',
                 ),
               ],
@@ -100,25 +100,25 @@ class HelpPage extends StatelessWidget {
                 _buildFAQItem(
                   question: 'Машина не запускается',
                   answer:
-                  'Проверьте подключение к интернету и попробуйте снова. '
+                      'Проверьте подключение к интернету и попробуйте снова. '
                       'Если проблема не решена, перезапустите приложение.',
                 ),
                 _buildFAQItem(
                   question: 'Время не обновляется',
                   answer:
-                  'Таймер продолжает работать, даже если приложение закрыто. '
+                      'Таймер продолжает работать, даже если приложение закрыто. '
                       'Обновите страницу, чтобы увидеть текущее время.',
                 ),
                 _buildFAQItem(
                   question: 'Я не получаю уведомления',
                   answer:
-                  'Проверьте настройки уведомлений на вашем телефоне '
+                      'Проверьте настройки уведомлений на вашем телефоне '
                       'и убедитесь, что они включены для приложения.',
                 ),
                 _buildFAQItem(
                   question: 'Машина остаётся "занятой"',
                   answer:
-                  'Подождите несколько минут или свяжитесь с '
+                      'Подождите несколько минут или свяжитесь с '
                       'администратором для сброса машины.',
                 ),
               ],
@@ -138,21 +138,21 @@ class HelpPage extends StatelessWidget {
                   icon: Icons.security,
                   text: 'Безопасность',
                   description:
-                  'Ваше соединение защищено Firebase Authentication. '
+                      'Ваше соединение защищено Firebase Authentication. '
                       'Ваши данные находятся под защитой.',
                 ),
                 _buildTechItem(
                   icon: Icons.cloud,
                   text: 'Синхронизация',
                   description:
-                  'Данные синхронизируются в реальном времени '
+                      'Данные синхронизируются в реальном времени '
                       'между всеми пользователями.',
                 ),
                 _buildTechItem(
                   icon: Icons.timer,
                   text: 'Постоянные таймеры',
                   description:
-                  'Таймеры продолжают работу даже после закрытия '
+                      'Таймеры продолжают работу даже после закрытия '
                       'приложения. Они сохраняются локально.',
                 ),
               ],
@@ -171,7 +171,7 @@ class HelpPage extends StatelessWidget {
                 ListTile(
                   leading: Icon(Icons.email, color: Colors.blue),
                   title: Text('Email поддержки'),
-                  subtitle: Text('laundrylens@gmail.com'),
+                  subtitle: Text('equipsight@gmail.com'),
                   onTap: () {
                     // TODO: Реализовать открытие почтового клиента
                   },
@@ -226,8 +226,8 @@ class HelpPage extends StatelessWidget {
                   SizedBox(height: 8),
                   Text(
                     'Это приложение находится в разработке. '
-                        'Некоторые функции могут изменяться. '
-                        'Спасибо за понимание.',
+                    'Некоторые функции могут изменяться. '
+                    'Спасибо за понимание.',
                     style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                   ),
                 ],

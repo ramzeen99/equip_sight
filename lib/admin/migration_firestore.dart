@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:laundry_lens/data/donnees.dart';
+import 'package:equip_sight/data/donnees.dart';
 
 import '../model/model.dart';
 
@@ -13,16 +13,14 @@ Future<void> migrateMachines() async {
         .collection("machines")
         .doc(machine.id)
         .set({
-      "name": machine.nom,
-      "status": machine.statut == MachineStatus.libre ? "available" : "occupied",
-      "tempsRestant": machine.tempsRestant,
-      "heatLeft": machine.heatLeft,
-      "utilisateurActuel": machine.utilisateurActuel,
-      "lastUpdate": FieldValue.serverTimestamp(),
-    });
-
-    print("Migrated: ${machine.nom}");
+          "name": machine.nom,
+          "status": machine.statut == MachineStatus.libre
+              ? "available"
+              : "occupied",
+          "tempsRestant": machine.tempsRestant,
+          "heatLeft": machine.heatLeft,
+          "utilisateurActuel": machine.utilisateurActuel,
+          "lastUpdate": FieldValue.serverTimestamp(),
+        });
   }
-
-  print("Migration terminée !");
 }

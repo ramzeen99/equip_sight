@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:laundry_lens/data/donnees.dart';
+import 'package:equip_sight/data/donnees.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 Future<void> syncMachinesToFirebase() async {
   final firestore = FirebaseFirestore.instance;
 
@@ -13,6 +14,7 @@ Future<void> syncMachinesToFirebase() async {
     });
   }
 }
+
 class FirebaseService {
   static bool _isInitialized = false;
 
@@ -24,7 +26,6 @@ class FirebaseService {
       _isInitialized = true;
     }
   }
-
 
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -42,15 +43,14 @@ class FirebaseService {
   // Mettre à jour une machine
   // Обновить информацию о машине
   static Future<void> updateMachine(
-      String machineId,
-      Map<String, dynamic> data,
-      ) {
+    String machineId,
+    Map<String, dynamic> data,
+  ) {
     return machinesCollection.doc(machineId).update({
       ...data,
       'lastUpdate': FieldValue.serverTimestamp(),
     });
   }
-
 
   // Créer une machine (pour l'initialisation)
   // Создать машину (для инициализации)
@@ -100,7 +100,7 @@ class FirebaseService {
         //print('❌ Нет данных в Firestore');
         await initializeTestData();
       } else {
-       // print('✅ Данные присутствуют в Firestore');
+        // print('✅ Данные присутствуют в Firestore');
       }
     } catch (e) {
       //print('❌ Ошибка диагностики: $e');

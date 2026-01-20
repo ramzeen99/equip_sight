@@ -1,7 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:equip_sight/model/notification_model.dart';
+import 'package:equip_sight/model/preferences_model.dart';
 import 'package:vibration/vibration.dart';
-import 'package:laundry_lens/model/preferences_model.dart';
-import 'package:laundry_lens/model/notification_model.dart';
 
 class SoundVibrationService {
   static final AudioPlayer _audioPlayer = AudioPlayer();
@@ -19,7 +19,12 @@ class SoundVibrationService {
   static const Map<NotificationType, List<int>> _vibrationPatterns = {
     NotificationType.machineFinished: [500, 1000, 500], // 🎉 Длинный / Long
     NotificationType.machineAvailable: [200, 500], // ✅ Средний / Moyen
-    NotificationType.reminder: [100, 200, 100, 200], // ⏰ Короткий повторяющийся / Court répété
+    NotificationType.reminder: [
+      100,
+      200,
+      100,
+      200,
+    ], // ⏰ Короткий повторяющийся / Court répété
     NotificationType.maintenance: [1000], // 🚧 Длинный одиночный / Long unique
     NotificationType.system: [500], // ℹ️ Средний одиночный / Moyen unique
   };
@@ -49,7 +54,7 @@ class SoundVibrationService {
         //print('🔊 Звук воспроизведен: $soundPath / Son joué: $soundPath');
       }
     } catch (e) {
-    //  print('❌ Ошибка звука: $e / Erreur son: $e');
+      //  print('❌ Ошибка звука: $e / Erreur son: $e');
       // 🎵 Резервный звук / Son de fallback
       await _playFallbackSound();
     }
@@ -82,7 +87,7 @@ class SoundVibrationService {
         }
       }
     } catch (e) {
-     // print('❌ Ошибка вибрации: $e / Erreur vibration: $e');
+      // print('❌ Ошибка вибрации: $e / Erreur vibration: $e');
     }
   }
 

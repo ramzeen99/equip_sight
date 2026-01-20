@@ -1,5 +1,5 @@
+import 'package:equip_sight/services/dormitory_stats_service.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry_lens/services/dormitory_stats_service.dart';
 
 class DormitoryDashboard extends StatefulWidget {
   final String dormId;

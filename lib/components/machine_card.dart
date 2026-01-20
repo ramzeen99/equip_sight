@@ -1,10 +1,8 @@
-import 'package:provider/provider.dart';
-import 'package:laundry_lens/model/model.dart';
-import 'package:laundry_lens/providers/user_provider.dart';
+import 'package:equip_sight/model/model.dart';
+import 'package:equip_sight/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-// FR : Carte affichant une machine avec ses informations
-// RU : Карточка стиральной машины с подробной информацией
 class MachineCard extends StatelessWidget {
   final Machine machine;
   final Function(Machine)? onActionPressed;
@@ -17,17 +15,12 @@ class MachineCard extends StatelessWidget {
       elevation: 2,
       margin: EdgeInsets.all(8),
       child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: 200,
-          maxHeight: 300, // FR : Hauteur max — RU : Максимальная высота
-        ),
+        constraints: BoxConstraints(minHeight: 200, maxHeight: 300),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // FR : En-tête de la carte
-              // RU : Верхняя часть карточки
               Row(
                 children: [
                   Icon(
@@ -41,7 +34,7 @@ class MachineCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          machine.nom, // FR : Nom de la machine — RU : Название машины
+                          machine.nom,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -49,7 +42,7 @@ class MachineCard extends StatelessWidget {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          machine.emplacement, // FR : Emplacement — RU : Местоположение
+                          machine.emplacement,
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -63,20 +56,14 @@ class MachineCard extends StatelessWidget {
 
               SizedBox(height: 12),
 
-              // FR : Badge de statut
-              // RU : Индикатор статуса
               _buildStatusBadge(),
 
               SizedBox(height: 12),
 
-              // FR : Informations dynamiques selon l'état
-              // RU : Динамическая информация в зависимости от статуса
               _buildDynamicContent(context),
 
               SizedBox(height: 16),
 
-              // FR : Bouton d'action
-              // RU : Кнопка действия
               _buildActionButton(),
             ],
           ),
@@ -85,8 +72,6 @@ class MachineCard extends StatelessWidget {
     );
   }
 
-  // FR : Badge de couleur indiquant le statut
-  // RU : Цветной индикатор текущего статуса машины
   Widget _buildStatusBadge() {
     Color backgroundColor;
 
@@ -109,8 +94,6 @@ class MachineCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        // FR : Texte + emoji déjà fournis
-        // RU : Текст и эмодзи приходят из модели
         '${machine.emojiStatut} ${machine.texteStatut}',
         style: TextStyle(
           color: Colors.white,
@@ -121,8 +104,6 @@ class MachineCard extends StatelessWidget {
     );
   }
 
-  // FR : Zone dynamique : temps restant, utilisateur actuel, photo...
-  // RU : Динамическая зона: оставшееся время, текущий пользователь, фото...
   Widget _buildDynamicContent(BuildContext context) {
     return Consumer<UserProvider>(
       builder: (context, userProvider, child) {
@@ -131,13 +112,11 @@ class MachineCard extends StatelessWidget {
 
         final widgets = <Widget>[];
 
-        // FR : Temps restant si machine occupée
-        // RU : Оставшееся время, если машина занята
         if (machine.statut == MachineStatus.occupe &&
             machine.tempsRestant != null) {
           widgets.add(
             Text(
-              '⏱️ ${machine.tempsRestant} мин осталось', // FR : min restantes — RU : мин осталось
+              '⏱️ ${machine.tempsRestant} мин осталось',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -147,8 +126,6 @@ class MachineCard extends StatelessWidget {
           );
         }
 
-        // FR : Affichage utilisateur actuel
-        // RU : Отображение текущего пользователя
         if (machine.utilisateurActuel != null) {
           final userWidgets = <Widget>[
             SizedBox(height: widgets.isNotEmpty ? 8 : 4),
@@ -159,7 +136,6 @@ class MachineCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     isCurrentUser ? 'Вы' : machine.utilisateurActuel!,
-                    // FR : "Vous" → RU : "Вы"
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -173,8 +149,6 @@ class MachineCard extends StatelessWidget {
             ),
           ];
 
-          // FR : Photo de l'utilisateur s'il est connecté
-          // RU : Фото пользователя, если он подключён
           if (isCurrentUser && currentUser?.photoURL != null) {
             userWidgets.addAll([
               SizedBox(height: 4),
@@ -204,8 +178,6 @@ class MachineCard extends StatelessWidget {
     );
   }
 
-  // FR : Bouton d'action selon le statut
-  // RU : Кнопка действия в зависимости от статуса машины
   Widget _buildActionButton() {
     String buttonText;
     Color buttonColor;
@@ -213,17 +185,17 @@ class MachineCard extends StatelessWidget {
 
     switch (machine.statut) {
       case MachineStatus.libre:
-        buttonText = 'НАЧАТЬ'; // FR : DÉMARRER — RU : НАЧАТЬ
+        buttonText = 'НАЧАТЬ';
         buttonColor = Colors.green;
         isEnabled = true;
         break;
       case MachineStatus.occupe:
-        buttonText = 'ЗАНЯТО'; // FR : OCCUPÉ — RU : ЗАНЯТО
+        buttonText = 'ЗАНЯТО';
         buttonColor = Colors.grey;
         isEnabled = false;
         break;
       case MachineStatus.termine:
-        buttonText = 'ОСВОБОДИТЬ'; // FR : LIBÉRER — RU : ОСВОБОДИТЬ
+        buttonText = 'ОСВОБОДИТЬ';
         buttonColor = Colors.orange;
         isEnabled = true;
         break;

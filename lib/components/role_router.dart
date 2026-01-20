@@ -1,8 +1,8 @@
+import 'package:equip_sight/pages/admin_dashboard.dart';
+import 'package:equip_sight/pages/dormitory_dashboard.dart';
+import 'package:equip_sight/pages/index.dart';
+import 'package:equip_sight/pages/university_dashboard.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry_lens/pages/admin_dashboard.dart';
-import 'package:laundry_lens/pages/dormitory_dashboard.dart';
-import 'package:laundry_lens/pages/index.dart';
-import 'package:laundry_lens/pages/university_dashboard.dart';
 
 void navigateByRole(
   BuildContext context,
@@ -21,7 +21,6 @@ void navigateByRole(
       if (universityId != null && universityId.isNotEmpty) {
         targetPage = UniversityDashboard(universityId: universityId);
       } else {
-        // fallback sûr
         targetPage = IndexPage();
         debugPrint(
           'Warning: universityId manquant pour role university_admin, fallback vers IndexPage',
@@ -44,7 +43,6 @@ void navigateByRole(
       targetPage = IndexPage();
   }
 
-  // Protection contre double navigation
   WidgetsBinding.instance.addPostFrameCallback((_) {
     if (Navigator.canPop(context)) {
       Navigator.pushReplacement(

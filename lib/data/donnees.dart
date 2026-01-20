@@ -1,4 +1,4 @@
-import 'package:laundry_lens/model/model.dart';
+import 'package:equip_sight/model/model.dart';
 
 class DonneesExemple {
   static List<Machine> get machines => [

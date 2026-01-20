@@ -1,16 +1,16 @@
-import 'package:laundry_lens/model/model.dart';
-import 'package:laundry_lens/providers/notification_provider.dart';
-import 'package:laundry_lens/model/notification_model.dart';
-import 'package:laundry_lens/model/user_model.dart';
+import 'package:equip_sight/model/model.dart';
+import 'package:equip_sight/model/notification_model.dart';
+import 'package:equip_sight/model/user_model.dart';
+import 'package:equip_sight/providers/notification_provider.dart';
 
 class PersonalizedNotificationService {
   // 🎯 Проверить, хочет ли пользователь это уведомление
   // 🎯 Vérifier si l'utilisateur veut cette notification
   static bool _shouldSendNotification(
-      Machine machine,
-      AppUser? user,
-      NotificationType type,
-      ) {
+    Machine machine,
+    AppUser? user,
+    NotificationType type,
+  ) {
     if (user == null) return true; // ✅ По умолчанию = отправлять
     // ✅ Par défaut = envoyer
 
@@ -33,19 +33,19 @@ class PersonalizedNotificationService {
     switch (type) {
       case NotificationType.machineFinished:
         return true; // ✅ Всегда отправлять о завершённых машинах
-    // ✅ Toujours envoyer les machines terminées
+      // ✅ Toujours envoyer les machines terminées
       case NotificationType.machineAvailable:
         return true; // ✅ Всегда отправлять о доступности
-    // ✅ Toujours envoyer les disponibilités
+      // ✅ Toujours envoyer les disponibilités
       case NotificationType.reminder:
         return true; // ✅ Всегда отправлять напоминания
-    // ✅ Toujours envoyer les rappels
+      // ✅ Toujours envoyer les rappels
       case NotificationType.maintenance:
         return true; // ✅ Всегда отправлять о техническом обслуживании
-    // ✅ Toujours envoyer les maintenances
+      // ✅ Toujours envoyer les maintenances
       case NotificationType.system:
         return true; // ✅ Всегда отправлять системные уведомления
-    // ✅ Toujours envoyer les systèmes
+      // ✅ Toujours envoyer les systèmes
     }
   }
 
@@ -85,10 +85,10 @@ class PersonalizedNotificationService {
   // 🏗️ Создать персонализированное уведомление
   // 🏗️ Créer une notification personnalisée
   static AppNotification _createPersonalizedNotification(
-      Machine machine,
-      NotificationType type,
-      AppUser? user,
-      ) {
+    Machine machine,
+    NotificationType type,
+    AppUser? user,
+  ) {
     String title = '';
     String message = '';
 
@@ -102,7 +102,7 @@ class PersonalizedNotificationService {
           // 👤 Использовать displayNameOrEmail вместо name
           // 👤 Utiliser displayNameOrEmail au lieu de name
           message +=
-          ' ${user.displayNameOrEmail.split('@').first}'; // Только имя
+              ' ${user.displayNameOrEmail.split('@').first}'; // Только имя
           // Juste le prénom
         }
         break;
@@ -110,8 +110,7 @@ class PersonalizedNotificationService {
       case NotificationType.machineAvailable:
         title = '✅ Машина доступна';
         // ✅ Machine disponible
-        message =
-        '${machine.nom} (${machine.emplacement}) теперь свободна';
+        message = '${machine.nom} (${machine.emplacement}) теперь свободна';
         // ${machine.nom} (${machine.emplacement}) est maintenant libre
         break;
 
@@ -154,15 +153,15 @@ class PersonalizedNotificationService {
   // 📲 Отправить персонализированное push-уведомление
   // 📲 Envoyer une push notification personnalisée
   static void _sendPushNotification(
-      AppNotification notification,
-      AppUser? user,
-      ) {
+    AppNotification notification,
+    AppUser? user,
+  ) {
     // TODO: Реализовать отправку через FCM
     // TODO: Implémenter l'envoi via FCM
     // Использовать user?.fcmToken для отправки конкретному пользователю
     // Utiliser le user?.fcmToken pour envoyer à un utilisateur spécifique
 
-   /* print('''
+    /* print('''
     📲 Персонализированное push-уведомление:
     // 📲 Push notification personnalisée:
     Заголовок: ${notification.title}

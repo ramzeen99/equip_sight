@@ -1,9 +1,10 @@
+import 'package:equip_sight/components/title_app_design.dart';
+import 'package:equip_sight/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry_lens/constants.dart';
-import '../model/model.dart';
+
 import '../components/machine_card.dart';
+import '../model/model.dart';
 import '../pages/onboarding.dart';
-import 'package:laundry_lens/components/title_app_design.dart';
 
 class HomeLockedPage extends StatelessWidget {
   static const String id = "HomeLocked";
@@ -46,7 +47,9 @@ class HomeLockedPage extends StatelessWidget {
                   label: const Text("Зарегистрироваться"),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),
@@ -64,7 +67,9 @@ class HomeLockedPage extends StatelessWidget {
                   label: const Text("Войти в систему"),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),
@@ -82,18 +87,48 @@ class HomeLockedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fakeMachines = [
-      Machine(id: "1", nom: "Стиральная машина A", statut: MachineStatus.libre, emplacement: "1 этаж"),
-      Machine(id: "2", nom: "Стиральная машина B", statut: MachineStatus.libre, emplacement: "1 этаж"),
-      Machine(id: "3", nom: "Стиральная машина C", statut: MachineStatus.occupe, emplacement: "2 этаж"),
-      Machine(id: "4", nom: "Стиральная машина D", statut: MachineStatus.termine, emplacement: "2 этаж"),
-      Machine(id: "5", nom: "Стиральная машина E", statut: MachineStatus.libre, emplacement: "3 этаж"),
-      Machine(id: "6", nom: "Стиральная машина F", statut: MachineStatus.occupe, emplacement: "3 этаж"),
+      Machine(
+        id: "1",
+        nom: "Стиральная машина A",
+        statut: MachineStatus.libre,
+        emplacement: "1 этаж",
+      ),
+      Machine(
+        id: "2",
+        nom: "Стиральная машина B",
+        statut: MachineStatus.libre,
+        emplacement: "1 этаж",
+      ),
+      Machine(
+        id: "3",
+        nom: "Стиральная машина C",
+        statut: MachineStatus.occupe,
+        emplacement: "2 этаж",
+      ),
+      Machine(
+        id: "4",
+        nom: "Стиральная машина D",
+        statut: MachineStatus.termine,
+        emplacement: "2 этаж",
+      ),
+      Machine(
+        id: "5",
+        nom: "Стиральная машина E",
+        statut: MachineStatus.libre,
+        emplacement: "3 этаж",
+      ),
+      Machine(
+        id: "6",
+        nom: "Стиральная машина F",
+        statut: MachineStatus.occupe,
+        emplacement: "3 этаж",
+      ),
     ];
 
     return Scaffold(
       backgroundColor: const Color(0xFF459380),
       appBar: AppBar(
-        title: const TitleAppDesign(textTitle: 'LAUNDRY LENS'),
+        title: const TitleAppDesign(textTitle: 'EquipSight'),
         backgroundColor: const Color(0xFF459380),
         centerTitle: true,
       ),
@@ -102,12 +137,7 @@ class HomeLockedPage extends StatelessWidget {
           children: [
             DrawerHeader(
               decoration: BoxDecoration(color: Color(0xFF459380)),
-              child: Center(
-                child: Text(
-                  'LAUNDRY LENS',
-                  style: titreStyle,
-                ),
-              ),
+              child: Center(child: Text('EquipSight', style: titreStyle)),
             ),
             ListTile(
               leading: const Icon(Icons.login),

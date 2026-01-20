@@ -1,5 +1,5 @@
+import 'package:equip_sight/services/university_stats_service.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry_lens/services/university_stats_service.dart';
 
 class UniversityDashboard extends StatefulWidget {
   final String universityId;

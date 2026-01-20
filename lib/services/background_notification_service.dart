@@ -1,9 +1,10 @@
 // lib/services/background_notification_service.dart
 import 'dart:convert';
+
+import 'package:equip_sight/services/firebase_service.dart';
+import 'package:equip_sight/services/local_notification_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:laundry_lens/services/local_notification_service.dart';
-import 'package:laundry_lens/services/firebase_service.dart';
 
 /// Ключ для хранения списка запланированных будильников
 /// Clé pour stocker la liste des alarmes programmées
@@ -62,7 +63,8 @@ Future<void> timerFinishedCallback() async {
         // Cette alarme est due -> notifier et mettre à jour Firebase
 
         final title = '🎉 Машина готова!'; // Machine prête !
-        final body = 'Ваша ${machineName ?? "машина"} (${location ?? ""}) завершила работу'; // Votre ${machineName ?? "machine"} (${location ?? ""}) est terminée
+        final body =
+            'Ваша ${machineName ?? "машина"} (${location ?? ""}) завершила работу'; // Votre ${machineName ?? "machine"} (${location ?? ""}) est terminée
 
         // Локальное уведомление
         // Notification locale

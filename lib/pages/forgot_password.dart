@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:equip_sight/components/button_login_signup.dart';
+import 'package:equip_sight/components/forms.dart';
+import 'package:equip_sight/components/title_app_design.dart';
+import 'package:equip_sight/pages/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:laundry_lens/components/title_app_design.dart';
-import 'package:laundry_lens/components/button_login_signup.dart';
-import 'package:laundry_lens/components/forms.dart';
-import 'package:laundry_lens/pages/login.dart';
+import 'package:flutter/material.dart';
 
 // FR : Page de récupération du mot de passe
 // RU : Страница восстановления пароля
@@ -48,11 +48,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   // RU : Перевод ошибок Firebase в текст
   String _translateFirebaseError(String errorCode) {
     const Map<String, String> firebaseErrorMessages = {
-      'user-not-found': 'Пользователь с этим email не найден.', // Aucun utilisateur trouvé avec cet email
-      'invalid-email': 'Неверный адрес электронной почты.', // Adresse email invalide
-      'user-disabled': 'Этот аккаунт был отключен.', // Ce compte a été désactivé
-      'too-many-requests': 'Слишком много попыток. Попробуйте позже.', // Trop de tentatives
-      'network-request-failed': 'Ошибка подключения. Проверьте интернет.', // Erreur de connexion
+      'user-not-found':
+          'Пользователь с этим email не найден.', // Aucun utilisateur trouvé avec cet email
+      'invalid-email':
+          'Неверный адрес электронной почты.', // Adresse email invalide
+      'user-disabled':
+          'Этот аккаунт был отключен.', // Ce compte a été désactivé
+      'too-many-requests':
+          'Слишком много попыток. Попробуйте позже.', // Trop de tentatives
+      'network-request-failed':
+          'Ошибка подключения. Проверьте интернет.', // Erreur de connexion
     };
 
     return firebaseErrorMessages[errorCode] ??
@@ -63,12 +68,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   // RU : Проверка email
   bool _validateEmail() {
     if (email.isEmpty) {
-      _showError('Пожалуйста, введите ваш email'); // Veuillez entrer votre adresse email
+      _showError(
+        'Пожалуйста, введите ваш email',
+      ); // Veuillez entrer votre adresse email
       return false;
     }
 
     if (!email.contains('@') || !email.contains('.')) {
-      _showError('Пожалуйста, введите корректный email'); // Veuillez entrer une adresse email valide
+      _showError(
+        'Пожалуйста, введите корректный email',
+      ); // Veuillez entrer une adresse email valide
       return false;
     }
 
@@ -90,7 +99,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());
-      _showSuccess('Письмо для сброса пароля отправлено на $email'); // Un email de réinitialisation a été envoyé
+      _showSuccess(
+        'Письмо для сброса пароля отправлено на $email',
+      ); // Un email de réinitialisation a été envoyé
       //print('✅ Email envoyé à: $email');
 
       setState(() {
@@ -106,7 +117,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         emailSent = false;
       });
     } catch (e) {
-      _showError('Произошла непредвиденная ошибка'); // Une erreur inattendue est survenue
+      _showError(
+        'Произошла непредвиденная ошибка',
+      ); // Une erreur inattendue est survenue
       //print('❌ Ошибка сброса пароля: $e');
 
       setState(() {
@@ -235,7 +248,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   Column(
                     children: [
                       EmailField(
-                        hintText: 'Введите ваш email', // FR : Entrez votre email
+                        hintText:
+                            'Введите ваш email', // FR : Entrez votre email
                         onChanged: (value) {
                           setState(() {
                             email = value;
@@ -293,9 +307,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             SizedBox(height: 10),
                             Text(
                               '1. Откройте письмо, которое мы отправили\n'
-                                  '2. Нажмите на ссылку для сброса пароля\n'
-                                  '3. Выберите новый пароль\n'
-                                  '4. Войдите с новым паролем',
+                              '2. Нажмите на ссылку для сброса пароля\n'
+                              '3. Выберите новый пароль\n'
+                              '4. Войдите с новым паролем',
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 14,
@@ -319,7 +333,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             Navigator.pushNamedAndRemoveUntil(
                               context,
                               Login.id,
-                                  (route) => false, // FR : Supprime toutes les routes
+                              (route) =>
+                                  false, // FR : Supprime toutes les routes
                               // RU : Удалить все маршруты
                             );
                           },

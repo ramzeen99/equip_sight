@@ -1,5 +1,5 @@
+import 'package:equip_sight/services/admin_stats_service.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry_lens/services/admin_stats_service.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -76,18 +76,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
     IconData icon = statIcons[title]!;
 
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 6,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [
-              color.withValues(alpha: 0.7),
-              color,
-            ],
+            colors: [color.withValues(alpha: 0.7), color],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equip_sight/components/button_login_signup.dart';
+import 'package:equip_sight/components/forms.dart';
+import 'package:equip_sight/components/role_router.dart';
+import 'package:equip_sight/components/social_login_button.dart';
+import 'package:equip_sight/components/title_app_design.dart';
+import 'package:equip_sight/constants.dart';
+import 'package:equip_sight/pages/forgot_password.dart';
+import 'package:equip_sight/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry_lens/components/button_login_signup.dart';
-import 'package:laundry_lens/components/forms.dart';
-import 'package:laundry_lens/components/role_router.dart';
-import 'package:laundry_lens/components/social_login_button.dart';
-import 'package:laundry_lens/components/title_app_design.dart';
-import 'package:laundry_lens/constants.dart';
-import 'package:laundry_lens/pages/forgot_password.dart';
-import 'package:laundry_lens/services/auth_service.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class Login extends StatefulWidget {
@@ -54,7 +54,7 @@ class _LoginState extends State<Login> {
     return Scaffold(
       backgroundColor: Color(0xFF459380),
       appBar: AppBar(
-        title: TitleAppDesign(textTitle: 'LAUNDRY LENS'),
+        title: TitleAppDesign(textTitle: 'EquipSight'),
         backgroundColor: Color(0xFF459380),
         centerTitle: true,
       ),
@@ -77,7 +77,7 @@ class _LoginState extends State<Login> {
                       Column(
                         children: [
                           TitleAppDesign(textTitle: 'ДОБРО ПОЖАЛОВАТЬ'),
-                          TitleAppDesign(textTitle: 'В LAUNDRY LENS'),
+                          TitleAppDesign(textTitle: 'В EquipSight'),
                         ],
                       ),
 

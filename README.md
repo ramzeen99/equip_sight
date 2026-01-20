@@ -1,34 +1,34 @@
 
-<p align="center">
-  <img src="Laundry_Lens.png" alt="Laundry Lens Banner" width="1200">
+<p style="text-align: center;">
+  <img src="equip_sight.png" alt="EquipSight Banner" width="1200">
 </p>
 
-# 🧺 Laundry Lens
+# 🧺 EquipSight
 ### Smart Laundry Management App for Dormitories
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Flutter-3.19-blue">
-  <img src="https://img.shields.io/badge/Firebase-Active-orange">
-  <img src="https://img.shields.io/badge/Platform-Android%20|%20iOS-green">
-  <img src="https://img.shields.io/badge/License-MIT-lightgrey">
+<p style="text-align: center;">
+  <img alt="" src="https://img.shields.io/badge/Flutter-3.19-blue">
+  <img alt="" src="https://img.shields.io/badge/Firebase-Active-orange">
+  <img alt="" src="https://img.shields.io/badge/Platform-Android%20|%20iOS-green">
+  <img alt="" src="https://img.shields.io/badge/License-MIT-lightgrey">
 </p>
 
 ---
 
 # 🌐 README Languages
-- 🇬🇧 [English](#english-version)
-- 🇫🇷 [Français](#version-française)
-- 🇷🇺 [Русский](#русская-версия)
+- 🇬🇧 [English](#en)
+- 🇫🇷 [Français](#fr)
+- 🇷🇺 [Русский](#ru)
 
 ---
 
-# 🇬🇧 English Version
+<h1 id="en">🇬🇧 English Version</h1>
 
 ## 👤 Founder
 **Ramzeen Chirio BARBOZA**
 
 ## 📌 App Description
-Laundry Lens is a smart mobile application that helps dormitory residents track washing machine availability, receive notifications, and manage laundry activity in real time.
+EquipSight is a smart mobile application that helps dormitory residents track washing machine availability, receive notifications, and manage laundry activity in real time.
 
 ## ✨ Features
 - 🔄 Real-time machine status  
@@ -48,16 +48,16 @@ Laundry Lens is a smart mobile application that helps dormitory residents track 
 
 ## 🖼 Screenshots  
 *(Add your images here — recommended size 400–600px each)*  
-<p align="center">
-  <img src="screenshots/screen1.png" width="250">
-  <img src="screenshots/screen2.png" width="250">
-  <img src="screenshots/screen3.png" width="250">
+<p style="text-align: center;">
+  <img alt="" src="assets/screenshots/screen1.png" width="396">
+  <img alt="" src="assets/screenshots/screen2.png" width="388">
+  <img alt="" src="assets/screenshots/screen3.png" width="392">
 </p>
 
 ## 🚀 Installation
 ```bash
-git clone https://github.com/ramzeen99/laundry_lens.git
-cd laundry-lens
+git https://github.com/ramzeen99/equip_sight.git
+cd equip_sight
 flutter pub get
 flutter run
 ````
@@ -92,7 +92,7 @@ MIT License.
 
 ---
 
-# 🇫🇷 Version Française
+<h1 id="fr">🇫🇷 Version Française</h1>
 
 ## 👤 Fondateur
 
@@ -100,7 +100,7 @@ MIT License.
 
 ## 📌 Description de l'application
 
-Laundry Lens est une application intelligente permettant aux résidents de dortoirs de suivre l’utilisation des machines à laver, recevoir des notifications et gérer leur activité de lessive.
+EquipSight est une application intelligente permettant aux résidents de dortoirs de suivre l’utilisation des machines à laver, recevoir des notifications et gérer leur activité de lessive.
 
 ## ✨ Fonctionnalités
 
@@ -116,17 +116,17 @@ Laundry Lens est une application intelligente permettant aux résidents de dorto
 
 *(Ajoutez vos images ici — taille recommandée 400–600px)*
 
-<p align="center">
-  <img src="screenshots/screen1.png" width="250">
-  <img src="screenshots/screen2.png" width="250">
-  <img src="screenshots/screen3.png" width="250">
+<p style="text-align: center;">
+  <img alt="" src="assets/screenshots/screen1.png" width="396">
+  <img alt="" src="assets/screenshots/screen2.png" width="388">
+  <img alt="" src="assets/screenshots/screen3.png" width="392">
 </p>
 
 ## 🚀 Installation
 
 ```bash
-git clone https://github.com/ramzeen99/laundry_lens.git
-cd laundry-lens
+git clone https://github.com/ramzeen99/equip_sight.git
+cd equip_sight
 flutter pub get
 flutter run
 ```
@@ -161,7 +161,7 @@ Licence MIT.
 
 ---
 
-# 🇷🇺 Русская версия
+<h1 id="ru">🇷🇺 Русская версия</h1>
 
 ## 👤 Основатель
 
@@ -169,7 +169,7 @@ Licence MIT.
 
 ## 📌 Описание приложения
 
-Laundry Lens — это умное приложение для мониторинга стиральных машин в общежитиях, получения уведомлений и управления процессом стирки.
+EquipSight — это умное приложение для мониторинга стиральных машин в общежитиях, получения уведомлений и управления процессом стирки.
 
 ## ✨ Возможности
 
@@ -185,17 +185,17 @@ Laundry Lens — это умное приложение для монитори�
 
 *(Добавьте свои изображения — рекомендуется 400–600px)*
 
-<p align="center">
-  <img src="screenshots/screen1.png" width="250">
-  <img src="screenshots/screen2.png" width="250">
-  <img src="screenshots/screen3.png" width="250">
+<p style="text-align: center;">
+  <img alt="" src="assets/screenshots/screen1.png" width="396">
+  <img alt="" src="assets/screenshots/screen2.png" width="388">
+  <img alt="" src="assets/screenshots/screen3.png" width="392">
 </p>
 
 ## 🚀 Установка
 
 ```bash
-git clone https://github.com/ramzeen99/laundry_lens.git
-cd laundry-lens
+git clone https://github.com/ramzeen99/equip_sight.git
+cd equip_sight
 flutter pub get
 flutter run
 ```
@@ -232,12 +232,12 @@ MIT License.
 
 # 📥 Downloads (Coming Soon)
 
-<p align="center">
+<p style="text-align: center;">
   <!-- Google Play badge placeholder -->
-  <img src="assets/badges/google_play_placeholder.png" width="220" alt="Google Play Coming Soon">
+  <img src="assets/badges/google_play_placeholder.png" width="565" alt="Google Play Coming Soon">
 
   <!-- App Store badge placeholder -->
-  <img src="assets/badges/app_store_placeholder.png" width="220" alt="App Store Coming Soon">
+  <img src="assets/badges/app_store_placeholder.png" width="564" alt="App Store Coming Soon">
 </p>
 
 > 🚧 **Download section reserved** — Badges will be added once the app is published.
@@ -246,9 +246,9 @@ MIT License.
 
 # 🎨 Improved Banner Design (Reserved)
 
-<p align="center">
+<p style="text-align: center;">
   <!-- Replace this later with a more modern and redesigned banner -->
-  <img src="Laundry_Lens.png" alt="Laundry Lens Banner" width="1200">
+  <img src="equip_sight.png" alt="EquipSight Banner" width="1200">
 </p>
 
 > 🎨 **Design placeholder** — A more elegant, modern banner will be added here later  

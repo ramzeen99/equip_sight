@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'package:laundry_lens/model/model.dart';
-import 'package:laundry_lens/providers/notification_provider.dart';
-import 'package:laundry_lens/providers/preferences_provider.dart';
-import 'package:laundry_lens/model/notification_model.dart';
+
+import 'package:equip_sight/model/model.dart';
+import 'package:equip_sight/model/notification_model.dart';
+import 'package:equip_sight/providers/notification_provider.dart';
+import 'package:equip_sight/providers/preferences_provider.dart';
 
 class ReminderService {
   // Карта активных таймеров напоминаний
@@ -78,10 +79,10 @@ class ReminderService {
   // 🔔 Активировать напоминание
   // 🔔 Trigger the reminder
   static void _triggerReminder(
-      Machine machine,
-      NotificationProvider notificationProvider,
-      PreferencesProvider preferencesProvider,
-      ) {
+    Machine machine,
+    NotificationProvider notificationProvider,
+    PreferencesProvider preferencesProvider,
+  ) {
     // 🚫 Проверить, включены ли напоминания
     // 🚫 Check if reminders are enabled
     if (!preferencesProvider.isNotificationTypeEnabled(

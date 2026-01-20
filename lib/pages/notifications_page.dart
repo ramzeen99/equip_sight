@@ -1,10 +1,9 @@
 // lib/pages/notifications_page.dart
+import 'package:equip_sight/model/notification_model.dart';
+import 'package:equip_sight/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
-//import 'package:laundry_lens/services/notification_service.dart';
-import 'package:provider/provider.dart';
-import 'package:laundry_lens/providers/notification_provider.dart';
-import 'package:laundry_lens/model/notification_model.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart';
 //import 'package:timezone/timezone.dart';
 
@@ -19,7 +18,7 @@ class NotificationsPage extends StatefulWidget {
 
 class _NotificationsPageState extends State<NotificationsPage> {
   final FlutterLocalNotificationsPlugin notificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
@@ -81,9 +80,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   Widget _buildNotificationItem(
-      AppNotification notification,
-      BuildContext context,
-      ) {
+    AppNotification notification,
+    BuildContext context,
+  ) {
     return Dismissible(
       key: Key(notification.id),
       background: Container(color: Colors.red),
@@ -138,8 +137,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
     final difference = now.difference(timestamp);
 
     if (difference.inMinutes < 1) return 'Только что'; // Traduit: Just now
-    if (difference.inMinutes < 60) return '${difference.inMinutes} мин назад'; // Traduit: X minutes ago
-    if (difference.inHours < 24) return '${difference.inHours} ч назад'; // Traduit: X hours ago
+    if (difference.inMinutes < 60)
+      return '${difference.inMinutes} мин назад'; // Traduit: X minutes ago
+    if (difference.inHours < 24)
+      return '${difference.inHours} ч назад'; // Traduit: X hours ago
     return '${difference.inDays} д назад'; // Traduit: X days ago
   }
 }

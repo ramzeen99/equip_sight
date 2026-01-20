@@ -1,11 +1,11 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:equip_sight/components/button_login_signup.dart';
+import 'package:equip_sight/components/title_app_design.dart';
+import 'package:equip_sight/constants.dart';
+import 'package:equip_sight/pages/login.dart';
+import 'package:equip_sight/pages/registration.dart';
+import 'package:equip_sight/providers/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry_lens/components/button_login_signup.dart';
-import 'package:laundry_lens/components/title_app_design.dart';
-import 'package:laundry_lens/constants.dart';
-import 'package:laundry_lens/pages/login.dart';
-import 'package:laundry_lens/pages/registration.dart';
-import 'package:laundry_lens/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'index.dart';
@@ -131,7 +131,7 @@ class _OnboardingPageState extends State<OnboardingPage>
               flex: 5,
               child: Column(
                 children: [
-                  SizedBox(child: TitleAppDesign(textTitle: 'LAUNDRY LENS')),
+                  SizedBox(child: TitleAppDesign(textTitle: 'EquipSight')),
                 ],
               ),
             ),
@@ -141,7 +141,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TypewriterAnimatedText(
-                      'Экономь время, забудь о занятых машинках', // Économisez du temps, oubliez les machines occupées
+                      'Экономь время, забудь о занятых машинках',
                       speed: const Duration(milliseconds: 100),
                     ),
                   ],
