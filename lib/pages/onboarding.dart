@@ -44,7 +44,6 @@ class _OnboardingPageState extends State<OnboardingPage>
       setState(() {});
     });
 
-    // Vérifier si l'utilisateur est déjà connecté / Проверить, вошел ли пользователь уже в систему
     _checkIfUserIsLoggedIn();
   }
 
@@ -55,15 +54,11 @@ class _OnboardingPageState extends State<OnboardingPage>
       _isCheckingAuth = true;
     });
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    // Attendre un peu pour l'animation / Подождать немного для анимации
     await Future.delayed(Duration(milliseconds: 1000));
-
-    // Vérifier si l'utilisateur est connecté / Проверить, подключен ли пользователь
 
     await userProvider.waitForInitialization();
 
     if (userProvider.isLoggedIn && userProvider.currentUser != null) {
-      //print('✅ Utilisateur connecté détecté, redirection vers Index');
       if (mounted) {
         Navigator.pushReplacementNamed(context, IndexPage.id);
       }
@@ -112,7 +107,7 @@ class _OnboardingPageState extends State<OnboardingPage>
           ),
           SizedBox(height: 20),
           Text(
-            'Проверка подключения...', // Vérification de la connexion...
+            'Проверка подключения...',
             style: TextStyle(color: Colors.white, fontSize: 16),
           ),
         ],
@@ -153,7 +148,7 @@ class _OnboardingPageState extends State<OnboardingPage>
             ),
             SizedBox(height: 20.0),
             ButtonLoginSignup(
-              textButton: 'Войти', // Se connecter
+              textButton: 'Войти',
               colorButton: Color(0xFF1E40AF),
               sizeButton: 40.0,
               colorText: Colors.white,
@@ -163,7 +158,7 @@ class _OnboardingPageState extends State<OnboardingPage>
             ),
             SizedBox(height: 20.0),
             ButtonLoginSignup(
-              textButton: 'Регистрация', // Inscription
+              textButton: 'Регистрация',
               colorButton: Colors.transparent,
               sizeButton: 36.0,
               colorText: Color(0xFF1E40AF),

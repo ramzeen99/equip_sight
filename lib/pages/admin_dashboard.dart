@@ -1,6 +1,8 @@
 import 'package:equip_sight/services/admin_stats_service.dart';
 import 'package:flutter/material.dart';
 
+import 'login.dart';
+
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
 
@@ -31,6 +33,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
       appBar: AppBar(
         title: const Text('Панель администратора'),
         centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => Login()),
+              (_) => false,
+            );
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
       ),
       body: FutureBuilder<Map<String, int>>(
         future: _statsService.getGlobalStats(),

@@ -9,12 +9,12 @@ class AdminStatsService {
   }
 
   Future<int> countDorms() async {
-    final snap = await _firestore.collection('dorms').get();
+    final snap = await _firestore.collectionGroup('dorms').get();
     return snap.size;
   }
 
   Future<int> countMachines() async {
-    final snap = await _firestore.collection('machines').get();
+    final snap = await _firestore.collectionGroup('machines').get();
     return snap.size;
   }
 

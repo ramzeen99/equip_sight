@@ -188,6 +188,8 @@ class _LoginState extends State<Login> {
                                         context,
                                         role,
                                         universityId: userData['universityId'],
+                                        countryId: userData['countryId'],
+                                        cityId: userData['universityId'],
                                         dormId: userData['dormId'],
                                       );
                                     }
@@ -270,6 +272,8 @@ class _LoginState extends State<Login> {
                                           role,
                                           universityId:
                                               userData['universityId'],
+                                          countryId: userData['countryId'],
+                                          cityId: userData['cityId'],
                                           dormId: userData['dormId'],
                                         );
                                       }

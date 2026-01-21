@@ -18,6 +18,8 @@ class AppUser {
   /// 🔐 Sécurité & navigation
   final String role;
   final String? universityId;
+  final String? countryId;
+  final String? cityId;
   final String? dormId;
 
   AppUser({
@@ -34,22 +36,24 @@ class AppUser {
     required this.role,
     this.universityId,
     this.dormId,
+    this.countryId,
+    this.cityId,
   });
 
   // =========================
   // Factory depuis Firebase Auth
   // =========================
   factory AppUser.fromFirebaseUser(
-      User user, {
-        String role = 'user',
-        String? pays,
-        String? ville,
-        String? universite,
-        String? dortoir,
-        int? heatLeft,
-        String? universityId,
-        String? dormId,
-      }) {
+    User user, {
+    String role = 'user',
+    String? pays,
+    String? ville,
+    String? universite,
+    String? dortoir,
+    int? heatLeft,
+    String? universityId,
+    String? dormId,
+  }) {
     return AppUser(
       id: user.uid,
       email: user.email ?? '',
@@ -71,10 +75,10 @@ class AppUser {
   // Factory depuis Firestore
   // =========================
   factory AppUser.fromMap(
-      Map<String, dynamic> map,
-      String uid,
-      String? emailAuth,
-      ) {
+    Map<String, dynamic> map,
+    String uid,
+    String? emailAuth,
+  ) {
     return AppUser(
       id: uid,
       email: emailAuth ?? map['email'] ?? '',
@@ -162,10 +166,7 @@ class AppUser {
     return "countries/$pays/cities/$ville/Universities/$universite/dorms/$dortoir/machines";
   }
 
-  static AppUser fromFirestoreDoc(
-      DocumentSnapshot doc,
-      String? emailAuth,
-      ) {
+  static AppUser fromFirestoreDoc(DocumentSnapshot doc, String? emailAuth) {
     return AppUser.fromMap(
       doc.data() as Map<String, dynamic>,
       doc.id,

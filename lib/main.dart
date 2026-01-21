@@ -115,6 +115,8 @@ class AuthWrapper extends StatelessWidget {
           context,
           userProvider.role,
           universityId: userProvider.universityId,
+          countryId: userProvider.countryId,
+          cityId: userProvider.cityId,
           dormId: userProvider.dormId,
         );
       });

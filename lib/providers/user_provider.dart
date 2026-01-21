@@ -17,6 +17,10 @@ class UserProvider with ChangeNotifier {
 
   String? get universityId => _currentUser?.universityId;
 
+  String? get countryId => _currentUser?.countryId;
+
+  String? get cityId => _currentUser?.cityId;
+
   String? get dormId => _currentUser?.dormId;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;

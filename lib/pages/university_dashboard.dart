@@ -1,10 +1,19 @@
 import 'package:equip_sight/services/university_stats_service.dart';
 import 'package:flutter/material.dart';
 
+import 'login.dart';
+
 class UniversityDashboard extends StatefulWidget {
   final String universityId;
+  final String? countryId;
+  final String? cityId;
 
-  const UniversityDashboard({super.key, required this.universityId});
+  const UniversityDashboard({
+    super.key,
+    required this.universityId,
+    this.countryId,
+    this.cityId,
+  });
 
   @override
   State<UniversityDashboard> createState() => _UniversityDashboardState();
@@ -33,9 +42,23 @@ class _UniversityDashboardState extends State<UniversityDashboard> {
       appBar: AppBar(
         title: const Text('Панель университета'),
         centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => Login()),
+              (_) => false,
+            );
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
       ),
       body: FutureBuilder<Map<String, int>>(
-        future: _statsService.getUniversityStats(widget.universityId),
+        future: _statsService.getUniversityStats(
+          widget.universityId,
+          widget.countryId!,
+          widget.cityId!,
+        ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

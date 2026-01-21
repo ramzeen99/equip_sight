@@ -8,6 +8,8 @@ void navigateByRole(
   BuildContext context,
   String? role, {
   String? universityId,
+  String? countryId,
+  String? cityId,
   String? dormId,
 }) {
   Widget targetPage;
@@ -18,8 +20,17 @@ void navigateByRole(
       break;
 
     case 'university_admin':
-      if (universityId != null && universityId.isNotEmpty) {
-        targetPage = UniversityDashboard(universityId: universityId);
+      if (universityId != null &&
+          universityId.isNotEmpty &&
+          countryId != null &&
+          countryId.isNotEmpty &&
+          cityId != null &&
+          cityId.isNotEmpty) {
+        targetPage = UniversityDashboard(
+          universityId: universityId,
+          countryId: countryId,
+          cityId: cityId,
+        );
       } else {
         targetPage = IndexPage();
         debugPrint(
