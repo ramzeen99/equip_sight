@@ -8,38 +8,31 @@ class UniversityStatsService {
     String countryId,
     String cityId,
   ) async {
-    final _ = _firestore
-        .collectionGroup('universities')
-        .where(FieldPath.documentId, isEqualTo: universityId)
-        .limit(1);
-
-    final uniSnap = await _firestore
-        .collection('universities')
-        .doc(universityId)
-        .get();
-    if (!uniSnap.exists) {
-      throw Exception('Université introuvable');
-    }
-
-    final dormSnap = await _firestore
+    final uniRef = _firestore
         .collection('countries')
         .doc(countryId)
         .collection('cities')
         .doc(cityId)
         .collection('universities')
-        .doc(universityId)
-        .collection('dorms')
-        .get();
+        .doc(universityId);
 
-    int totalDorms = dormSnap.size;
+    final uniSnap = await uniRef.get();
+    if (!uniSnap.exists) {
+      throw Exception('Université introuvable');
+    }
+
+    final dormSnap = await uniRef.collection('dorms').get();
+    final totalDorms = dormSnap.size;
 
     int activeMachines = 0;
     int inactiveMachines = 0;
 
-    for (var dormDoc in dormSnap.docs) {
+    for (final dormDoc in dormSnap.docs) {
       final machinesSnap = await dormDoc.reference.collection('machines').get();
-      for (var machine in machinesSnap.docs) {
-        if (machine.data()['status'] == 'active') {
+
+      for (final machine in machinesSnap.docs) {
+        final status = machine.data()['status'] ?? 'inactive';
+        if (status == 'active') {
           activeMachines++;
         } else {
           inactiveMachines++;

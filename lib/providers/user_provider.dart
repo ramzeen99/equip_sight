@@ -13,14 +13,11 @@ class UserProvider with ChangeNotifier {
   String? get error => _error;
   bool get isLoggedIn => _currentUser != null;
 
+  // 🔹 Champs normalisés
   String? get role => _currentUser?.role;
-
-  String? get universityId => _currentUser?.universityId;
-
   String? get countryId => _currentUser?.countryId;
-
   String? get cityId => _currentUser?.cityId;
-
+  String? get universityId => _currentUser?.universityId;
   String? get dormId => _currentUser?.dormId;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -30,7 +27,7 @@ class UserProvider with ChangeNotifier {
     _initializeAuthListener();
   }
 
-  /// Écoute les changements d'état d'authentification
+  // 🔹 Écoute authentification
   void _initializeAuthListener() {
     _auth.authStateChanges().listen(
       (User? user) async {
@@ -54,7 +51,7 @@ class UserProvider with ChangeNotifier {
     );
   }
 
-  /// Charge les données utilisateur depuis Firestore
+  // 🔹 Chargement Firestore
   Future<void> _loadUserFromFirestore(User user) async {
     try {
       final userDoc = await _firestore.collection('users').doc(user.uid).get();
@@ -79,7 +76,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Attendre la fin de l'initialisation
+  // 🔹 Attente explicite (utile au démarrage)
   Future<void> waitForInitialization() async {
     if (!_isLoading) return;
     await Future.doWhile(() async {
@@ -88,7 +85,7 @@ class UserProvider with ChangeNotifier {
     });
   }
 
-  /// Mise à jour du profil (nom et photo)
+  // 🔹 Mise à jour profil
   Future<void> updateProfile({String? displayName, String? photoURL}) async {
     try {
       if (_auth.currentUser == null) return;
@@ -96,7 +93,9 @@ class UserProvider with ChangeNotifier {
       if (displayName != null) {
         await _auth.currentUser!.updateDisplayName(displayName);
       }
-      if (photoURL != null) await _auth.currentUser!.updatePhotoURL(photoURL);
+      if (photoURL != null) {
+        await _auth.currentUser!.updatePhotoURL(photoURL);
+      }
 
       await _auth.currentUser!.reload();
       final refreshedUser = _auth.currentUser;
@@ -122,30 +121,30 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  /// Mise à jour des infos de dortoir/localisation
+  // 🔹 Mise à jour rattachement (DORTOIR / UNIVERSITÉ)
   Future<void> updateDormInfo({
-    required String pays,
-    required String ville,
-    required String universite,
-    required String dortoir,
+    required String countryId,
+    required String cityId,
+    required String universityId,
+    required String dormId,
     int? heatLeft,
   }) async {
     try {
       if (_auth.currentUser == null) return;
 
       _currentUser = _currentUser?.copyWith(
-        pays: pays,
-        ville: ville,
-        universite: universite,
-        dortoir: dortoir,
+        countryId: countryId,
+        cityId: cityId,
+        universityId: universityId,
+        dormId: dormId,
         heatLeft: heatLeft,
       );
 
       await _firestore.collection('users').doc(_currentUser!.id).update({
-        'pays': pays,
-        'ville': ville,
-        'universite': universite,
-        'dortoir': dortoir,
+        'countryId': countryId,
+        'cityId': cityId,
+        'universityId': universityId,
+        'dormId': dormId,
         if (heatLeft != null) 'heatLeft': heatLeft,
         'lastUpdated': FieldValue.serverTimestamp(),
       });
@@ -158,16 +157,11 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  /// Déconnexion
+  // 🔹 Déconnexion
   Future<void> signOut() async {
     try {
-      // 1️⃣ Déconnexion Firebase
       await _auth.signOut();
-
-      // 2️⃣ Réinitialisation du provider
       _currentUser = null;
-
-      // 3️⃣ Forcer un refresh pour éviter que authStateChanges reload l'ancien utilisateur
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -177,15 +171,26 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  /// Définir l'utilisateur actuel manuellement
+  // 🔹 Injection manuelle (tests / admin)
   void setCurrentUser(AppUser user) {
     _currentUser = user;
     notifyListeners();
   }
 
-  /// Retourne le chemin Firestore du dortoir de l'utilisateur
+  // 🔹 Chemin machines dortoir (FIABLE)
   String? get dormPath {
-    if (_currentUser == null || !_currentUser!.hasDormInfo) return null;
-    return "countries/${_currentUser!.pays}/cities/${_currentUser!.ville}/Universities/${_currentUser!.universite}/dorms/${_currentUser!.dortoir}/machines";
+    if (_currentUser == null ||
+        countryId == null ||
+        cityId == null ||
+        universityId == null ||
+        dormId == null) {
+      return null;
+    }
+
+    return "countries/$countryId"
+        "/cities/$cityId"
+        "/universities/$universityId"
+        "/dorms/$dormId"
+        "/machines";
   }
 }

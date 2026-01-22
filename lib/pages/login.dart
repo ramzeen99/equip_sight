@@ -189,7 +189,7 @@ class _LoginState extends State<Login> {
                                         role,
                                         universityId: userData['universityId'],
                                         countryId: userData['countryId'],
-                                        cityId: userData['universityId'],
+                                        cityId: userData['cityId'],
                                         dormId: userData['dormId'],
                                       );
                                     }

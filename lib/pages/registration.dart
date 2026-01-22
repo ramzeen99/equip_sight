@@ -14,10 +14,8 @@ class AppUser {
   final String id;
   final String email;
   final String? displayName;
-  final String? pays;
-  final String? ville;
-  final String? universite;
-  final String? dortoir;
+  final String? countryId;
+  final String? cityId;
   final bool? emailVerified;
   final String role;
   final String? universityId;
@@ -27,10 +25,8 @@ class AppUser {
     required this.id,
     required this.email,
     this.displayName,
-    this.pays,
-    this.ville,
-    this.universite,
-    this.dortoir,
+    this.countryId,
+    this.cityId,
     this.emailVerified,
     required this.role,
     this.universityId,
@@ -42,10 +38,8 @@ class AppUser {
       'id': id,
       'email': email,
       'displayName': displayName,
-      'pays': pays,
-      'ville': ville,
-      'universite': universite,
-      'dortoir': dortoir,
+      'countryId': countryId,
+      'cityId': cityId,
       'emailVerified': emailVerified,
       'role': role,
       'universityId': universityId,
@@ -464,12 +458,10 @@ class _RegistrationState extends State<Registration> {
           id: newUser.user!.uid,
           email: newUser.user!.email!,
           displayName: name.trim(),
-          pays: selectedCountry,
-          ville: selectedCity,
-          universite: selectedUniversity,
-          dortoir: selectedDorm,
+          countryId: selectedCountry,
+          cityId: selectedCity,
           emailVerified: newUser.user!.emailVerified,
-          role: 'user', // IMPORTANT
+          role: 'user',
           universityId: selectedUniversity,
           dormId: selectedDorm,
         );

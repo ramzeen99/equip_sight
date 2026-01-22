@@ -102,15 +102,18 @@ class ProfilePage extends StatelessWidget {
           ],
           SizedBox(height: 20),
 
-          // 🌍 Localisation & dortoir affichage
-          _buildBadge(Icons.flag, "Pays", user.pays ?? "Non défini"),
-          _buildBadge(Icons.location_city, "Ville", user.ville ?? "Non défini"),
+          _buildBadge(Icons.flag, "Pays", user.countryId ?? "Non défini"),
+          _buildBadge(
+            Icons.location_city,
+            "Ville",
+            user.cityId ?? "Non défini",
+          ),
           _buildBadge(
             Icons.school,
             "Université",
-            user.universite ?? "Non défini",
+            user.universityId ?? "Non défini",
           ),
-          _buildBadge(Icons.apartment, "Dortoir", user.dortoir ?? "Non défini"),
+          _buildBadge(Icons.apartment, "Dortoir", user.dormId ?? "Non défini"),
 
           SizedBox(height: 32),
 
@@ -180,6 +183,7 @@ class ProfilePage extends StatelessWidget {
               if (newName.isEmpty) return;
 
               await userProvider.updateProfile(displayName: newName);
+              if (!context.mounted) return;
               Navigator.pop(context);
             },
             child: Text("Sauvegarder"),
@@ -197,10 +201,10 @@ class ProfilePage extends StatelessWidget {
   ) async {
     final firestore = FirebaseFirestore.instance;
 
-    String? newCountry = user.pays;
-    String? newCity = user.ville;
-    String? newUniversity = user.universite;
-    String? newDorm = user.dortoir;
+    String? newCountry = user.countryId;
+    String? newCity = user.cityId;
+    String? newUniversity = user.universityId;
+    String? newDorm = user.dormId;
 
     List<String> countryList = (await firestore.collection('countries').get())
         .docs
@@ -251,7 +255,7 @@ class ProfilePage extends StatelessWidget {
               .map((e) => e.id)
               .toList();
     }
-
+    if (!context.mounted) return;
     showDialog(
       context: context,
       builder: (_) {
@@ -377,6 +381,7 @@ class ProfilePage extends StatelessWidget {
                     });
 
                     await userProvider.waitForInitialization();
+                    if (!context.mounted) return;
                     Navigator.pop(context);
                   },
                   child: Text("Sauvegarder"),

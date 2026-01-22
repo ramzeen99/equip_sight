@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 
 class UniversityDashboard extends StatefulWidget {
-  final String universityId;
+  final String? universityId;
   final String? countryId;
   final String? cityId;
 
@@ -54,11 +54,18 @@ class _UniversityDashboardState extends State<UniversityDashboard> {
         ),
       ),
       body: FutureBuilder<Map<String, int>>(
-        future: _statsService.getUniversityStats(
-          widget.universityId,
-          widget.countryId!,
-          widget.cityId!,
-        ),
+        future: () async {
+          try {
+            return await _statsService.getUniversityStats(
+              widget.universityId!,
+              widget.countryId!,
+              widget.cityId!,
+            );
+          } catch (e) {
+            debugPrint('Erreur getUniversityStats: $e');
+            rethrow;
+          }
+        }(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

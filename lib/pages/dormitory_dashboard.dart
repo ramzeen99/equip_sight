@@ -1,10 +1,21 @@
 import 'package:equip_sight/services/dormitory_stats_service.dart';
 import 'package:flutter/material.dart';
 
-class DormitoryDashboard extends StatefulWidget {
-  final String dormId;
+import 'login.dart';
 
-  const DormitoryDashboard({super.key, required this.dormId});
+class DormitoryDashboard extends StatefulWidget {
+  final String? countryId;
+  final String? cityId;
+  final String? universityId;
+  final String? dormId;
+
+  const DormitoryDashboard({
+    super.key,
+    required this.countryId,
+    required this.cityId,
+    required this.universityId,
+    required this.dormId,
+  });
 
   @override
   State<DormitoryDashboard> createState() => _DormitoryDashboardState();
@@ -28,9 +39,27 @@ class _DormitoryDashboardState extends State<DormitoryDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Панель общежития'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Панель общежития'),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => Login()),
+              (_) => false,
+            );
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
+      ),
       body: FutureBuilder<Map<String, int>>(
-        future: _statsService.getDormitoryStats(widget.dormId),
+        future: _statsService.getDormitoryStats(
+          countryId: widget.countryId!,
+          cityId: widget.cityId!,
+          universityId: widget.universityId!,
+          dormId: widget.dormId!,
+        ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
