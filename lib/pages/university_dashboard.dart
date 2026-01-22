@@ -65,6 +65,7 @@ class _UniversityDashboardState extends State<UniversityDashboard> {
           }
 
           if (snapshot.hasError) {
+            print('ERREUR STATS: ${snapshot.error}');
             return const Center(
               child: Text(
                 'Ошибка загрузки данных',
