@@ -104,12 +104,16 @@ class AuthWrapper extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context);
 
     if (userProvider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final firebaseUser = FirebaseAuth.instance.currentUser;
 
-    if (firebaseUser != null && userProvider.currentUser != null) {
+    if (firebaseUser != null &&
+        userProvider.role != null &&
+        userProvider.universityId != null &&
+        userProvider.countryId != null &&
+        userProvider.cityId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         navigateByRole(
           context,
@@ -120,6 +124,7 @@ class AuthWrapper extends StatelessWidget {
           dormId: userProvider.dormId,
         );
       });
+
       return const SizedBox();
     }
 

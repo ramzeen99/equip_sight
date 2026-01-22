@@ -8,71 +8,45 @@ class AppUser {
   final String? photoURL;
   final bool? emailVerified;
 
-  final String? pays;
-  final String? ville;
-  final String? universite;
-  final String? dortoir;
-
-  final int? heatLeft;
-
-  /// 🔐 Sécurité & navigation
+  /// 🔥 Nouvelle structure
   final String role;
-  final String? universityId;
   final String? countryId;
   final String? cityId;
+  final String? universityId;
   final String? dormId;
+
+  final int? heatLeft;
 
   AppUser({
     required this.id,
     required this.email,
+    required this.role,
     this.displayName,
     this.photoURL,
     this.emailVerified,
-    this.pays,
-    this.ville,
-    this.universite,
-    this.dortoir,
-    this.heatLeft,
-    required this.role,
-    this.universityId,
-    this.dormId,
     this.countryId,
     this.cityId,
+    this.universityId,
+    this.dormId,
+    this.heatLeft,
   });
 
   // =========================
-  // Factory depuis Firebase Auth
+  // Firebase Auth → AppUser
   // =========================
-  factory AppUser.fromFirebaseUser(
-    User user, {
-    String role = 'user',
-    String? pays,
-    String? ville,
-    String? universite,
-    String? dortoir,
-    int? heatLeft,
-    String? universityId,
-    String? dormId,
-  }) {
+  factory AppUser.fromFirebaseUser(User user, {String role = 'user'}) {
     return AppUser(
       id: user.uid,
       email: user.email ?? '',
       displayName: user.displayName,
       photoURL: user.photoURL,
       emailVerified: user.emailVerified,
-      pays: pays,
-      ville: ville,
-      universite: universite,
-      dortoir: dortoir,
-      heatLeft: heatLeft,
       role: role,
-      universityId: universityId,
-      dormId: dormId,
     );
   }
 
   // =========================
-  // Factory depuis Firestore
+  // Firestore → AppUser
   // =========================
   factory AppUser.fromMap(
     Map<String, dynamic> map,
@@ -85,21 +59,19 @@ class AppUser {
       displayName: map['displayName'],
       photoURL: map['photoURL'],
       emailVerified: map['emailVerified'],
-      pays: map['pays'],
-      ville: map['ville'],
-      universite: map['universite'],
-      dortoir: map['dortoir'],
+      role: map['role'] ?? 'user',
+      countryId: map['countryId'],
+      cityId: map['cityId'],
+      universityId: map['universityId'],
+      dormId: map['dormId'],
       heatLeft: map['heatLeft'] != null
           ? (map['heatLeft'] as num).toInt()
           : null,
-      role: map['role'] ?? 'user', // 🔥 fallback critique
-      universityId: map['universityId'],
-      dormId: map['dormId'],
     );
   }
 
   // =========================
-  // Firestore → Map
+  // AppUser → Firestore
   // =========================
   Map<String, dynamic> toMap() {
     return {
@@ -107,32 +79,28 @@ class AppUser {
       'displayName': displayName,
       'photoURL': photoURL,
       'emailVerified': emailVerified,
-      'pays': pays,
-      'ville': ville,
-      'universite': universite,
-      'dortoir': dortoir,
-      'heatLeft': heatLeft,
       'role': role,
+      'countryId': countryId,
+      'cityId': cityId,
       'universityId': universityId,
       'dormId': dormId,
+      'heatLeft': heatLeft,
       'lastUpdated': FieldValue.serverTimestamp(),
     };
   }
 
   // =========================
-  // CopyWith sécurisé
+  // CopyWith
   // =========================
   AppUser copyWith({
     String? displayName,
     String? photoURL,
-    String? pays,
-    String? ville,
-    String? universite,
-    String? dortoir,
-    int? heatLeft,
     String? role,
+    String? countryId,
+    String? cityId,
     String? universityId,
     String? dormId,
+    int? heatLeft,
   }) {
     return AppUser(
       id: id,
@@ -140,14 +108,12 @@ class AppUser {
       displayName: displayName ?? this.displayName,
       photoURL: photoURL ?? this.photoURL,
       emailVerified: emailVerified,
-      pays: pays ?? this.pays,
-      ville: ville ?? this.ville,
-      universite: universite ?? this.universite,
-      dortoir: dortoir ?? this.dortoir,
-      heatLeft: heatLeft ?? this.heatLeft,
       role: role ?? this.role,
+      countryId: countryId ?? this.countryId,
+      cityId: cityId ?? this.cityId,
       universityId: universityId ?? this.universityId,
       dormId: dormId ?? this.dormId,
+      heatLeft: heatLeft ?? this.heatLeft,
     );
   }
 
@@ -159,11 +125,18 @@ class AppUser {
   bool get hasPhoto => photoURL != null && photoURL!.isNotEmpty;
 
   bool get hasDormInfo =>
-      pays != null && ville != null && universite != null && dortoir != null;
+      countryId != null &&
+      cityId != null &&
+      universityId != null &&
+      dormId != null;
 
   String? get dormPath {
     if (!hasDormInfo) return null;
-    return "countries/$pays/cities/$ville/Universities/$universite/dorms/$dortoir/machines";
+    return "countries/$countryId"
+        "/cities/$cityId"
+        "/universities/$universityId"
+        "/dorms/$dormId"
+        "/machines";
   }
 
   static AppUser fromFirestoreDoc(DocumentSnapshot doc, String? emailAuth) {

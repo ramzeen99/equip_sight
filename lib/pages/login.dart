@@ -183,7 +183,6 @@ class _LoginState extends State<Login> {
                                     );
                                     final role = userData['role'];
                                     saveFcmToken();
-                                    print('userData: $userData');
                                     if (context.mounted) {
                                       navigateByRole(
                                         context,

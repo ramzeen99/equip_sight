@@ -8,7 +8,6 @@ class UniversityStatsService {
     String countryId,
     String cityId,
   ) async {
-    // 1️⃣ Référence université (source de vérité)
     final uniRef = _firestore
         .collection('countries')
         .doc(countryId)
@@ -22,19 +21,17 @@ class UniversityStatsService {
       throw Exception('Université introuvable');
     }
 
-    // 2️⃣ Dortoirs
     final dormSnap = await uniRef.collection('dorms').get();
     final totalDorms = dormSnap.size;
 
     int activeMachines = 0;
     int inactiveMachines = 0;
 
-    // 3️⃣ Machines (parcours hiérarchique)
     for (final dormDoc in dormSnap.docs) {
       final machinesSnap = await dormDoc.reference.collection('machines').get();
 
       for (final machine in machinesSnap.docs) {
-        final status = machine.data()['status'];
+        final status = machine.data()['status'] ?? 'inactive';
         if (status == 'active') {
           activeMachines++;
         } else {

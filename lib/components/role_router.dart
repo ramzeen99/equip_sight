@@ -20,34 +20,20 @@ void navigateByRole(
       break;
 
     case 'university_admin':
-      if (universityId != null &&
-          universityId.isNotEmpty &&
-          countryId != null &&
-          countryId.isNotEmpty &&
-          cityId != null &&
-          cityId.isNotEmpty) {
-        targetPage = UniversityDashboard(
-          universityId: universityId,
-          countryId: countryId,
-          cityId: cityId,
-        );
-      } else {
-        targetPage = IndexPage();
-        debugPrint(
-          'Warning: universityId manquant pour role university_admin, fallback vers IndexPage',
-        );
-      }
+      targetPage = UniversityDashboard(
+        universityId: universityId,
+        countryId: countryId,
+        cityId: cityId,
+      );
       break;
 
     case 'dorm_admin':
-      if (dormId != null && dormId.isNotEmpty) {
-        targetPage = DormitoryDashboard(dormId: dormId);
-      } else {
-        targetPage = IndexPage();
-        debugPrint(
-          'Warning: dormId manquant pour role dorm_admin, fallback vers IndexPage',
-        );
-      }
+      targetPage = DormitoryDashboard(
+        countryId: countryId,
+        cityId: cityId,
+        universityId: universityId,
+        dormId: dormId,
+      );
       break;
 
     default:
