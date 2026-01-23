@@ -67,14 +67,10 @@ class _IndexPageState extends State<IndexPage> {
       final utilisateur = userProvider.currentUser;
       if (utilisateur == null) return;
 
-      final dormPath = utilisateur.dormPath;
-      if (dormPath == null) {
-        debugPrint("⚠️ dormPath est null pour cet utilisateur");
-        return;
-      }
+      final dormRef = userProvider.dormRef;
+      if (dormRef == null) throw Exception('DormRef introuvable');
 
-      final machineProvider = context.read<MachineProvider>();
-      await machineProvider.loadMachines(dormPath);
+      await context.read<MachineProvider>().loadMachines(dormRef);
     } catch (e, stack) {
       debugPrint('Erreur lors de l’initialisation des données: $e');
       debugPrintStack(stackTrace: stack);
@@ -101,7 +97,9 @@ class _IndexPageState extends State<IndexPage> {
         throw Exception('DormPath introuvable');
       }
 
-      await context.read<MachineProvider>().loadMachines(user.dormPath!);
+      await context.read<MachineProvider>().loadMachines(
+        user.dormPath as DocumentReference<Object?>,
+      );
 
       if (!mounted) return;
 
@@ -349,7 +347,7 @@ class _IndexPageState extends State<IndexPage> {
   void _performLogout() async {
     final userProvider = context.read<UserProvider>();
     await userProvider.signOut();
-    if (context.mounted) {
+    if (mounted) {
       Navigator.pushReplacementNamed(context, OnboardingPage.id);
     }
   }

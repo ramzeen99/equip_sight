@@ -171,14 +171,12 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  // 🔹 Injection manuelle (tests / admin)
   void setCurrentUser(AppUser user) {
     _currentUser = user;
     notifyListeners();
   }
 
-  // 🔹 Chemin machines dortoir (FIABLE)
-  String? get dormPath {
+  DocumentReference? get dormRef {
     if (_currentUser == null ||
         countryId == null ||
         cityId == null ||
@@ -187,10 +185,14 @@ class UserProvider with ChangeNotifier {
       return null;
     }
 
-    return "countries/$countryId"
-        "/cities/$cityId"
-        "/universities/$universityId"
-        "/dorms/$dormId"
-        "/machines";
+    return FirebaseFirestore.instance
+        .collection('countries')
+        .doc(countryId)
+        .collection('cities')
+        .doc(cityId)
+        .collection('universities')
+        .doc(universityId)
+        .collection('dorms')
+        .doc(dormId);
   }
 }
