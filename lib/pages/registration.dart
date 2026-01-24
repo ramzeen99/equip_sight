@@ -12,46 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
-// MODELE APPUSER
-class AppUser {
-  final String id;
-  final String email;
-  final String? displayName;
-  final String? countryId;
-  final String? cityId;
-  final bool? emailVerified;
-  final String role;
-  final String? universityId;
-  final String? dormId;
-
-  AppUser({
-    required this.id,
-    required this.email,
-    this.displayName,
-    this.countryId,
-    this.cityId,
-    this.emailVerified,
-    required this.role,
-    this.universityId,
-    this.dormId,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'email': email,
-      'displayName': displayName,
-      'countryId': countryId,
-      'cityId': cityId,
-      'emailVerified': emailVerified,
-      'role': role,
-      'universityId': universityId,
-      'dormId': dormId,
-      'createdAt': FieldValue.serverTimestamp(),
-    };
-  }
-}
-
 class Registration extends StatefulWidget {
   static const String id = 'Registration';
   const Registration({super.key});
@@ -445,7 +405,6 @@ class _RegistrationState extends State<Registration> {
     });
 
     try {
-      // 1. Création Firebase Auth
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
@@ -454,13 +413,10 @@ class _RegistrationState extends State<Registration> {
       final user = userCredential.user;
       if (user == null) throw Exception("Erreur utilisateur");
 
-      // 2. Nom d'affichage
       await user.updateDisplayName(name.trim());
       await user.reload();
 
-      // 3. Création Firestore
-
-      final appUser = AppUser(
+      final appUser = prefix0.AppUser(
         id: user.uid,
         email: user.email!,
         displayName: name.trim(),
@@ -473,23 +429,12 @@ class _RegistrationState extends State<Registration> {
       );
 
       await _firestore.collection('users').doc(user.uid).set(appUser.toMap());
-
-      // 4. Sauvegarde du FCM token (comme au login)
       saveFcmToken();
 
-      // 5. Mettre à jour UserProvider immédiatement
       if (!mounted) return;
       final userProvider = context.read<UserProvider>();
-      userProvider.setCurrentUser(appUser as prefix0.AppUser);
+      userProvider.setCurrentUser(appUser);
 
-      // 6. Maintenant dormRef est disponible
-      final dormRef = context.read<UserProvider>().dormRef;
-      if (dormRef == null) {
-        throw Exception('DormRef toujours null après inscription');
-      }
-
-      // 7. Navigation
-      if (!mounted) return;
       navigateByRole(
         context,
         appUser.role,
