@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equip_sight/components/title_app_design.dart';
 import 'package:equip_sight/pages/help_page.dart';
+import 'package:equip_sight/pages/login.dart';
 import 'package:equip_sight/pages/onboarding.dart';
 import 'package:equip_sight/providers/preferences_provider.dart';
 import 'package:equip_sight/providers/user_provider.dart';
@@ -38,14 +39,15 @@ class _IndexPageState extends State<IndexPage> {
 
   void _checkAuthAndInitialize() async {
     final userProvider = context.read<UserProvider>();
+
+    await userProvider.waitForInitialization();
+
     if (!userProvider.isLoggedIn || userProvider.currentUser == null) {
       if (mounted) {
         Navigator.pushReplacementNamed(context, OnboardingPage.id);
         return;
       }
     }
-
-    await FirebaseAuth.instance.currentUser!.getIdToken(true);
 
     setState(() {
       _isCheckingAuth = false;
@@ -65,16 +67,14 @@ class _IndexPageState extends State<IndexPage> {
     try {
       final userProvider = context.read<UserProvider>();
       final utilisateur = userProvider.currentUser;
-      if (utilisateur == null) return;
-
-      final dormPath = utilisateur.dormPath;
-      if (dormPath == null) {
-        debugPrint("⚠️ dormPath est null pour cet utilisateur");
-        return;
+      if (utilisateur == null) {
+        throw Exception('Utilisateur non chargé');
       }
 
-      final machineProvider = context.read<MachineProvider>();
-      await machineProvider.loadMachines(dormPath);
+      final dormRef = userProvider.dormRef;
+      if (dormRef == null) throw Exception('DormRef introuvable');
+
+      await context.read<MachineProvider>().loadMachines(dormRef);
     } catch (e, stack) {
       debugPrint('Erreur lors de l’initialisation des données: $e');
       debugPrintStack(stackTrace: stack);
@@ -101,7 +101,9 @@ class _IndexPageState extends State<IndexPage> {
         throw Exception('DormPath introuvable');
       }
 
-      await context.read<MachineProvider>().loadMachines(user.dormPath!);
+      await context.read<MachineProvider>().loadMachines(
+        user.dormPath as DocumentReference<Object?>,
+      );
 
       if (!mounted) return;
 
@@ -335,9 +337,15 @@ class _IndexPageState extends State<IndexPage> {
             ),
             TextButton(
               child: const Text('Выйти', style: TextStyle(color: Colors.red)),
-              onPressed: () {
-                _performLogout();
-                Navigator.pushNamed(context, OnboardingPage.id);
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _performLogout();
+                if (!context.mounted) return;
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => Login()),
+                  (Route<dynamic> route) => false,
+                );
               },
             ),
           ],
@@ -346,12 +354,9 @@ class _IndexPageState extends State<IndexPage> {
     );
   }
 
-  void _performLogout() async {
+  Future<void> _performLogout() async {
     final userProvider = context.read<UserProvider>();
     await userProvider.signOut();
-    if (context.mounted) {
-      Navigator.pushReplacementNamed(context, OnboardingPage.id);
-    }
   }
 
   @override
@@ -583,32 +588,6 @@ class _IndexPageState extends State<IndexPage> {
               child: _buildMachinesGrid(machines, machineProvider),
             ),
           ),
-          // В классе _IndexPageState, в методе build, добавь:
-          /*  FloatingActionButton(
-            onPressed: () async {
-              // Простой тест уведомлений
-              await SimpleBackgroundService.showNotification(
-                title: 'Test Machine',
-                body: 'Timer démarré pour Machine 1',
-              );
-
-              // Запланированный тест (30 секунд)
-              await SimpleBackgroundService.scheduleNotification(
-                title: '⏰ Rappel',
-                body: 'Vérifiez votre machine',
-                delay: Duration(seconds: 30),
-              );
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Notifications test envoyées!'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-            child: Icon(Icons.notifications),
-            backgroundColor: Color(0xFF459380),
-          ),*/
         ],
       ),
     );

@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equip_sight/components/button_login_signup.dart';
 import 'package:equip_sight/components/forms.dart';
+import 'package:equip_sight/components/role_router.dart';
 import 'package:equip_sight/components/title_app_design.dart';
 import 'package:equip_sight/constants.dart';
-import 'package:equip_sight/pages/index.dart';
+import 'package:equip_sight/model/user_model.dart' as prefix0;
 import 'package:equip_sight/pages/login.dart';
+import 'package:equip_sight/providers/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:provider/provider.dart';
 
 // MODELE APPUSER
 class AppUser {
@@ -442,49 +445,71 @@ class _RegistrationState extends State<Registration> {
     });
 
     try {
-      final navigator = Navigator.of(context);
-      final newUser = await _auth.createUserWithEmailAndPassword(
+      // 1. Création Firebase Auth
+      final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
 
-      if (newUser.user != null && name.isNotEmpty) {
-        await newUser.user!.updateDisplayName(name.trim());
-        await newUser.user!.reload();
+      final user = userCredential.user;
+      if (user == null) throw Exception("Erreur utilisateur");
+
+      // 2. Nom d'affichage
+      await user.updateDisplayName(name.trim());
+      await user.reload();
+
+      // 3. Création Firestore
+
+      final appUser = AppUser(
+        id: user.uid,
+        email: user.email!,
+        displayName: name.trim(),
+        countryId: selectedCountry,
+        cityId: selectedCity,
+        universityId: selectedUniversity,
+        dormId: selectedDorm,
+        emailVerified: user.emailVerified,
+        role: 'user',
+      );
+
+      await _firestore.collection('users').doc(user.uid).set(appUser.toMap());
+
+      // 4. Sauvegarde du FCM token (comme au login)
+      saveFcmToken();
+
+      // 5. Mettre à jour UserProvider immédiatement
+      if (!mounted) return;
+      final userProvider = context.read<UserProvider>();
+      userProvider.setCurrentUser(appUser as prefix0.AppUser);
+
+      // 6. Maintenant dormRef est disponible
+      final dormRef = context.read<UserProvider>().dormRef;
+      if (dormRef == null) {
+        throw Exception('DormRef toujours null après inscription');
       }
 
-      if (newUser.user != null) {
-        final appUser = AppUser(
-          id: newUser.user!.uid,
-          email: newUser.user!.email!,
-          displayName: name.trim(),
-          countryId: selectedCountry,
-          cityId: selectedCity,
-          emailVerified: newUser.user!.emailVerified,
-          role: 'user',
-          universityId: selectedUniversity,
-          dormId: selectedDorm,
-        );
-
-        await _firestore
-            .collection('users')
-            .doc(appUser.id)
-            .set(appUser.toMap());
-
-        navigator.pushNamed(IndexPage.id);
-      }
-
-      setState(() => showSpinner = false);
+      // 7. Navigation
+      if (!mounted) return;
+      navigateByRole(
+        context,
+        appUser.role,
+        universityId: appUser.universityId,
+        countryId: appUser.countryId,
+        cityId: appUser.cityId,
+        dormId: appUser.dormId,
+      );
     } on FirebaseAuthException catch (e) {
       _showError(_translateFirebaseError(e.code));
-      setState(() => showSpinner = false);
     } catch (e) {
+      _showError(e.toString());
       _showError('Ошибка при регистрации');
-      setState(() => showSpinner = false);
+    } finally {
+      if (mounted) {
+        setState(() => showSpinner = false);
+      }
     }
   }
 
-  // INDICATEUR FORCE MOT DE PASSE
   Widget _buildPasswordStrengthIndicator() {
     Color color;
     String text;

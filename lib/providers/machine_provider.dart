@@ -9,33 +9,22 @@ import 'package:flutter/foundation.dart';
 import 'user_provider.dart';
 
 class MachineProvider with ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   List<Machine> _machines = [];
-  final Map<String, MachineTimer> _activeTimers =
-      {}; // clé = dormPath/machineId
+  final Map<String, MachineTimer> _activeTimers = {};
   bool _isLoading = false;
-
   List<Machine> get machines => _machines;
   bool get isLoading => _isLoading;
-
   Timer? _timerChecker;
-
   MachineProvider() {
     _startTimerChecker();
   }
 
-  /// Chargement des machines depuis Firestore
-  Future<void> loadMachines(String dormPath) async {
+  Future<void> loadMachines(DocumentReference dormRef) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final snapshot = await _firestore
-          .collection('dorms')
-          .doc(dormPath)
-          .collection('machines')
-          .get();
+      final snapshot = await dormRef.collection('machines').get();
 
       _machines = snapshot.docs.map((doc) {
         final data = doc.data();
@@ -56,53 +45,43 @@ class MachineProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Démarrer une machine
   Future<void> demarrerMachine({
     required String machineId,
     required UserProvider userProvider,
     required NotificationProvider notificationProvider,
     required PreferencesProvider preferencesProvider,
     int totalMinutes = 40,
-    String? dormPath,
   }) async {
     try {
       final currentUser = userProvider.currentUser;
-      if (currentUser == null || currentUser.dormPath == null) return;
-      final dormPath = currentUser.dormPath!;
+      final dormRef = userProvider.dormRef;
+      if (currentUser == null || dormRef == null) return;
 
       final machineIndex = _machines.indexWhere((m) => m.id == machineId);
       if (machineIndex == -1) return;
 
-      final timerKey = "$dormPath/$machineId";
+      final timerKey = "${dormRef.path}/$machineId";
 
-      // Créer et stocker le timer
       _activeTimers[timerKey] = MachineTimer(
         machineId: machineId,
-        dormPath: dormPath,
+        dormRef: dormRef,
         totalMinutes: totalMinutes,
         remainingMinutes: totalMinutes,
         isActive: true,
       );
 
-      // Mettre à jour la machine localement
       _machines[machineIndex] = _machines[machineIndex].copyWith(
         statut: MachineStatus.occupe,
         utilisateurActuel: currentUser.id,
         tempsRestant: totalMinutes,
       );
 
-      // Mettre à jour Firestore
-      await _firestore
-          .collection('dorms')
-          .doc(dormPath)
-          .collection('machines')
-          .doc(machineId)
-          .update({
-            'statut': 'occupe',
-            'utilisateurActuel': currentUser.id,
-            'tempsRestant': totalMinutes,
-            'lastUpdated': FieldValue.serverTimestamp(),
-          });
+      await dormRef.collection('machines').doc(machineId).update({
+        'statut': 'occupe',
+        'utilisateurActuel': currentUser.id,
+        'tempsRestant': totalMinutes,
+        'lastUpdated': FieldValue.serverTimestamp(),
+      });
 
       notifyListeners();
     } catch (e) {
@@ -111,21 +90,19 @@ class MachineProvider with ChangeNotifier {
     }
   }
 
-  /// Libérer une machine
   Future<void> libererMachine({
     required String machineId,
     required UserProvider userProvider,
     required NotificationProvider notificationProvider,
   }) async {
     try {
-      final currentUser = userProvider.currentUser;
-      if (currentUser == null || currentUser.dormPath == null) return;
-      final dormPath = currentUser.dormPath!;
+      final dormRef = userProvider.dormRef;
+      if (dormRef == null) return;
+
       final machineIndex = _machines.indexWhere((m) => m.id == machineId);
       if (machineIndex == -1) return;
 
-      final timerKey = "$dormPath/$machineId";
-
+      final timerKey = "${dormRef.path}/$machineId";
       _activeTimers.remove(timerKey);
 
       _machines[machineIndex] = _machines[machineIndex].copyWith(
@@ -134,17 +111,12 @@ class MachineProvider with ChangeNotifier {
         tempsRestant: null,
       );
 
-      await _firestore
-          .collection('dorms')
-          .doc(dormPath)
-          .collection('machines')
-          .doc(machineId)
-          .update({
-            'statut': 'libre',
-            'utilisateurActuel': null,
-            'tempsRestant': null,
-            'lastUpdated': FieldValue.serverTimestamp(),
-          });
+      await dormRef.collection('machines').doc(machineId).update({
+        'statut': 'libre',
+        'utilisateurActuel': null,
+        'tempsRestant': null,
+        'lastUpdated': FieldValue.serverTimestamp(),
+      });
 
       notifyListeners();
     } catch (e) {
@@ -184,28 +156,19 @@ class MachineProvider with ChangeNotifier {
           t.isActive = false;
           t.isFinished = true;
 
-          // Envoyer notification via NotificationProvider
           await NotificationProvider.instance.addQuickNotification(
             title: "Cycle terminé",
             message: "La machine \"${t.machineId}\" a terminé son cycle 🎉",
-            //type: NotificationType.machineFinished,
-            preferencesProvider: null, // ajouter si tu as PreferencesProvider
+            preferencesProvider: null,
           );
 
-          // Mettre à jour Firestore
-          await _firestore
-              .collection('dorms')
-              .doc(t.dormPath)
-              .collection('machines')
-              .doc(t.machineId)
-              .update({
-                'statut': 'libre',
-                'utilisateurActuel': null,
-                'tempsRestant': null,
-                'lastUpdated': FieldValue.serverTimestamp(),
-              });
+          await t.dormRef.collection('machines').doc(t.machineId).update({
+            'statut': 'libre',
+            'utilisateurActuel': null,
+            'tempsRestant': null,
+            'lastUpdated': FieldValue.serverTimestamp(),
+          });
 
-          // Mettre à jour la machine localement
           final machineIndex = _machines.indexWhere((m) => m.id == t.machineId);
           if (machineIndex != -1) {
             _machines[machineIndex] = _machines[machineIndex].copyWith(
@@ -227,10 +190,9 @@ class MachineProvider with ChangeNotifier {
   }
 }
 
-/// Classe interne pour gérer le timer d'une machine
 class MachineTimer {
   final String machineId;
-  final String dormPath;
+  final DocumentReference dormRef;
   int totalMinutes;
   int remainingMinutes;
   bool isActive;
@@ -238,7 +200,7 @@ class MachineTimer {
 
   MachineTimer({
     required this.machineId,
-    required this.dormPath,
+    required this.dormRef,
     required this.totalMinutes,
     required this.remainingMinutes,
     this.isActive = false,
