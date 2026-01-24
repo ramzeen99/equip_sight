@@ -128,7 +128,7 @@ class _IndexPageState extends State<IndexPage> {
     }
   }
 
-  Future<void> _startMachine(Machine machine) async {
+  Future<void> _startMachine(Machine machine, int minutes) async {
     final messenger = ScaffoldMessenger.of(context);
 
     try {
@@ -139,11 +139,14 @@ class _IndexPageState extends State<IndexPage> {
         userProvider: userProvider,
         notificationProvider: context.read<NotificationProvider>(),
         preferencesProvider: context.read<PreferencesProvider>(),
+        totalMinutes: minutes,
       );
 
       messenger.showSnackBar(
         SnackBar(
-          content: Text('✅ ${machine.nom} démarrée'),
+          content: Text(
+            '✅ ${machine.nom} démarrée pour $minutes minutes',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -153,6 +156,7 @@ class _IndexPageState extends State<IndexPage> {
       );
     }
   }
+
 
   Future<void> _releaseMachine(Machine machine) async {
     final messenger = ScaffoldMessenger.of(context);
@@ -199,29 +203,57 @@ class _IndexPageState extends State<IndexPage> {
   }
 
   void _showStartDialog(Machine machine) {
+    int selectedMinutes = 30; // valeur par défaut
+
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Запустить машину'),
-          content: Text('Запустить ${machine.nom}? (40 минут)'),
-          actions: [
-            TextButton(
-              child: const Text('Отмена'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: const Text('Запустить'), // Запустить
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await _startMachine(machine);
-              },
-            ),
-          ],
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Запустить ${machine.nom}'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Выберите длительность цикла'),
+                  const SizedBox(height: 12),
+
+                  DropdownButton<int>(
+                    value: selectedMinutes,
+                    isExpanded: true,
+                    items: const [
+                      DropdownMenuItem(value: 30, child: Text('30 минут')),
+                      DropdownMenuItem(value: 45, child: Text('45 минут')),
+                      DropdownMenuItem(value: 90, child: Text('90 минут')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => selectedMinutes = value);
+                      }
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Отмена'),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                ElevatedButton(
+                  child: const Text('Запустить'),
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await _startMachine(machine, selectedMinutes);
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
+
 
   void _showReleaseDialog(Machine machine) {
     showDialog(
