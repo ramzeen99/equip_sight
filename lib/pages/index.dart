@@ -53,7 +53,6 @@ class _IndexPageState extends State<IndexPage> {
       _isCheckingAuth = false;
     });
 
-    _startTimer();
     _initializeData();
   }
 
@@ -79,10 +78,6 @@ class _IndexPageState extends State<IndexPage> {
       debugPrint('Erreur lors de l’initialisation des données: $e');
       debugPrintStack(stackTrace: stack);
     }
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {});
   }
 
   Future<void> _refreshData() async {
@@ -144,9 +139,7 @@ class _IndexPageState extends State<IndexPage> {
 
       messenger.showSnackBar(
         SnackBar(
-          content: Text(
-            '✅ ${machine.nom} démarrée pour $minutes minutes',
-          ),
+          content: Text('✅ ${machine.nom} démarrée pour $minutes minutes'),
           backgroundColor: Colors.green,
         ),
       );
@@ -156,7 +149,6 @@ class _IndexPageState extends State<IndexPage> {
       );
     }
   }
-
 
   Future<void> _releaseMachine(Machine machine) async {
     final messenger = ScaffoldMessenger.of(context);
@@ -254,7 +246,6 @@ class _IndexPageState extends State<IndexPage> {
     );
   }
 
-
   void _showReleaseDialog(Machine machine) {
     showDialog(
       context: context,
@@ -287,14 +278,8 @@ class _IndexPageState extends State<IndexPage> {
     final dormPath = userProvider.currentUser?.dormPath;
     if (dormPath == null) return;
 
-    final remainingTime = machineProvider.getRemainingTime(
-      machineId: machine.id,
-      dormPath: dormPath,
-    );
-
-    final hasActiveTimer = machineProvider.hasActiveTimer(
-      machineId: machine.id,
-      dormPath: dormPath,
+    final remainingTime = machineProvider.getRemainingTimeFromEndTime(
+      machine.endTime,
     );
 
     showDialog(
@@ -316,16 +301,16 @@ class _IndexPageState extends State<IndexPage> {
                   'Осталось времени: $remainingTime минут',
                   style: TextStyle(fontSize: 16, color: Colors.green),
                 ),
-              if (remainingTime == null && hasActiveTimer)
+              if (remainingTime == null)
                 Text(
                   'Таймер активен, но время недоступно',
                   style: TextStyle(fontSize: 14, color: Colors.orange),
                 ),
-              if (!hasActiveTimer)
-                Text(
-                  'Нет активного таймера',
-                  style: TextStyle(fontSize: 14, color: Colors.red),
-                ),
+              // if (!hasActiveTimer)
+              //   Text(
+              //     'Нет активного таймера',
+              //     style: TextStyle(fontSize: 14, color: Colors.red),
+              //   ),
               SizedBox(height: 10),
               Text(
                 'Пользователь: ${machine.utilisateurActuel ?? 'Неизвестно'}',
@@ -638,9 +623,6 @@ class _IndexPageState extends State<IndexPage> {
     final machinesTerminees = machines
         .where((m) => m.statut == MachineStatus.termine)
         .length;
-    final activeTimers = machineProvider.activeTimers
-        .where((t) => t.isActive)
-        .length;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -675,29 +657,29 @@ class _IndexPageState extends State<IndexPage> {
             ],
           ),
           SizedBox(height: 10),
-          if (activeTimers > 0)
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.access_time, color: Colors.orange, size: 16),
-                  SizedBox(width: 8),
-                  Text(
-                    '$activeTimers активный(е) таймер(ы)',
-                    style: TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          // if (activeTimers > 0)
+          //   Container(
+          //     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          //     decoration: BoxDecoration(
+          //       color: Colors.orange.withValues(alpha: 0.2),
+          //       borderRadius: BorderRadius.circular(10),
+          //     ),
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         Icon(Icons.access_time, color: Colors.orange, size: 16),
+          //         SizedBox(width: 8),
+          //         Text(
+          //           '$activeTimers активный(е) таймер(ы)',
+          //           style: TextStyle(
+          //             color: Colors.orange,
+          //             fontWeight: FontWeight.bold,
+          //             fontSize: 14,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
         ],
       ),
     );
@@ -788,22 +770,18 @@ class _IndexPageState extends State<IndexPage> {
         itemCount: machines.length,
         itemBuilder: (context, index) {
           final machine = machines[index];
-          final userProvider = context.read<UserProvider>();
-          final dormPath = userProvider.currentUser?.dormPath;
-
-          final remainingTime = dormPath == null
-              ? null
-              : machineProvider.getRemainingTime(
-                  machineId: machine.id,
-                  dormPath: dormPath,
-                );
+          // final userProvider = context.read<UserProvider>();
+          // final dormPath = userProvider.currentUser?.dormPath;
+          //
+          // final remainingTime = dormPath == null
+          //     ? null
+          //     : machineProvider.getRemainingTimeFromEndTime(machine.endTime);
 
           final machineWithRealTime = Machine(
             id: machine.id,
             nom: machine.nom,
             emplacement: machine.emplacement,
             statut: machine.statut,
-            tempsRestant: remainingTime,
             utilisateurActuel: machine.utilisateurActuel,
           );
 

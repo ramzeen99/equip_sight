@@ -10,7 +10,6 @@ import 'user_provider.dart';
 
 class MachineProvider with ChangeNotifier {
   List<Machine> _machines = [];
-  final Map<String, MachineTimer> _activeTimers = {};
   bool _isLoading = false;
   List<Machine> get machines => _machines;
   bool get isLoading => _isLoading;
@@ -30,11 +29,11 @@ class MachineProvider with ChangeNotifier {
         final data = doc.data();
         return Machine(
           id: doc.id,
-          nom: data['nom'] ?? '',
+          nom: data['name'] ?? '',
           emplacement: data['emplacement'] ?? '',
           statut: MachineStatus.values.byName(data['statut'] ?? 'libre'),
-          tempsRestant: data['tempsRestant'],
           utilisateurActuel: data['utilisateurActuel'],
+          endTime: data['endTime'],
         );
       }).toList();
     } catch (e) {
@@ -60,26 +59,19 @@ class MachineProvider with ChangeNotifier {
       final machineIndex = _machines.indexWhere((m) => m.id == machineId);
       if (machineIndex == -1) return;
 
-      final timerKey = "${dormRef.path}/$machineId";
-
-      _activeTimers[timerKey] = MachineTimer(
-        machineId: machineId,
-        dormRef: dormRef,
-        totalMinutes: totalMinutes,
-        remainingMinutes: totalMinutes,
-        isActive: true,
-      );
-
       _machines[machineIndex] = _machines[machineIndex].copyWith(
         statut: MachineStatus.occupe,
-        utilisateurActuel: currentUser.id,
-        tempsRestant: totalMinutes,
+        utilisateurActuel: currentUser.displayName ?? currentUser.email,
+      );
+
+      final endTime = Timestamp.fromDate(
+        DateTime.now().add(Duration(minutes: totalMinutes)),
       );
 
       await dormRef.collection('machines').doc(machineId).update({
         'statut': 'occupe',
         'utilisateurActuel': currentUser.id,
-        'tempsRestant': totalMinutes,
+        'endTime': endTime,
         'lastUpdated': FieldValue.serverTimestamp(),
       });
 
@@ -88,6 +80,16 @@ class MachineProvider with ChangeNotifier {
       if (kDebugMode) print("Erreur demarrerMachine: $e");
       rethrow;
     }
+  }
+
+  int? getRemainingTimeFromEndTime(Timestamp? endTime) {
+    if (endTime == null) return null;
+
+    final now = DateTime.now();
+    final end = endTime.toDate();
+
+    final diff = end.difference(now).inMinutes;
+    return diff > 0 ? diff : 0;
   }
 
   Future<void> libererMachine({
@@ -102,19 +104,14 @@ class MachineProvider with ChangeNotifier {
       final machineIndex = _machines.indexWhere((m) => m.id == machineId);
       if (machineIndex == -1) return;
 
-      final timerKey = "${dormRef.path}/$machineId";
-      _activeTimers.remove(timerKey);
-
       _machines[machineIndex] = _machines[machineIndex].copyWith(
         statut: MachineStatus.libre,
         utilisateurActuel: null,
-        tempsRestant: null,
       );
 
       await dormRef.collection('machines').doc(machineId).update({
         'statut': 'libre',
         'utilisateurActuel': null,
-        'tempsRestant': null,
         'lastUpdated': FieldValue.serverTimestamp(),
       });
 
@@ -125,60 +122,9 @@ class MachineProvider with ChangeNotifier {
     }
   }
 
-  /// Vérifie si une machine a un timer actif
-  bool hasActiveTimer({required String machineId, required String dormPath}) {
-    final key = "$dormPath/$machineId";
-    final timer = _activeTimers[key];
-    return timer != null && timer.isActive && !timer.isFinished;
-  }
-
-  /// Retourne le temps restant pour une machine
-  int? getRemainingTime({required String machineId, required String dormPath}) {
-    final key = "$dormPath/$machineId";
-    final timer = _activeTimers[key];
-    return timer?.remainingMinutes;
-  }
-
-  // Getter public pour obtenir la liste des timers actifs
-  List<MachineTimer> get activeTimers => _activeTimers.values.toList();
-
-  /// Timer périodique pour mettre à jour les machines et notifications
   void _startTimerChecker() {
     _timerChecker?.cancel();
-    _timerChecker = Timer.periodic(const Duration(seconds: 60), (timer) async {
-      for (var entry in _activeTimers.entries) {
-        final t = entry.value;
-        if (!t.isActive) continue;
-
-        t.remainingMinutes -= 1;
-        if (t.remainingMinutes <= 0) {
-          t.remainingMinutes = 0;
-          t.isActive = false;
-          t.isFinished = true;
-
-          await NotificationProvider.instance.addQuickNotification(
-            title: "Cycle terminé",
-            message: "La machine \"${t.machineId}\" a terminé son cycle 🎉",
-            preferencesProvider: null,
-          );
-
-          await t.dormRef.collection('machines').doc(t.machineId).update({
-            'statut': 'libre',
-            'utilisateurActuel': null,
-            'tempsRestant': null,
-            'lastUpdated': FieldValue.serverTimestamp(),
-          });
-
-          final machineIndex = _machines.indexWhere((m) => m.id == t.machineId);
-          if (machineIndex != -1) {
-            _machines[machineIndex] = _machines[machineIndex].copyWith(
-              statut: MachineStatus.libre,
-              utilisateurActuel: null,
-              tempsRestant: null,
-            );
-          }
-        }
-      }
+    _timerChecker = Timer.periodic(const Duration(seconds: 60), (_) {
       notifyListeners();
     });
   }
@@ -188,22 +134,4 @@ class MachineProvider with ChangeNotifier {
     _timerChecker?.cancel();
     super.dispose();
   }
-}
-
-class MachineTimer {
-  final String machineId;
-  final DocumentReference dormRef;
-  int totalMinutes;
-  int remainingMinutes;
-  bool isActive;
-  bool isFinished;
-
-  MachineTimer({
-    required this.machineId,
-    required this.dormRef,
-    required this.totalMinutes,
-    required this.remainingMinutes,
-    this.isActive = false,
-    this.isFinished = false,
-  });
 }
