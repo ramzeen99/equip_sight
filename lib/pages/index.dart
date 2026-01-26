@@ -770,23 +770,9 @@ class _IndexPageState extends State<IndexPage> {
         itemCount: machines.length,
         itemBuilder: (context, index) {
           final machine = machines[index];
-          // final userProvider = context.read<UserProvider>();
-          // final dormPath = userProvider.currentUser?.dormPath;
-          //
-          // final remainingTime = dormPath == null
-          //     ? null
-          //     : machineProvider.getRemainingTimeFromEndTime(machine.endTime);
-
-          final machineWithRealTime = Machine(
-            id: machine.id,
-            nom: machine.nom,
-            emplacement: machine.emplacement,
-            statut: machine.statut,
-            utilisateurActuel: machine.utilisateurActuel,
-          );
 
           return MachineCard(
-            machine: machineWithRealTime,
+            machine: machine,
             onActionPressed: _handleMachineAction,
           );
         },

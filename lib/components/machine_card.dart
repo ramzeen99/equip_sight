@@ -113,15 +113,18 @@ class MachineCard extends StatelessWidget {
         final widgets = <Widget>[];
 
         if (machine.statut == MachineStatus.occupe && machine.endTime != null) {
-          final remainingMinutes = machine.endTime!
+          final remainingSeconds = machine.endTime!
               .toDate()
               .difference(DateTime.now())
-              .inMinutes;
+              .inSeconds;
 
-          if (remainingMinutes > 0) {
+          final minutes = remainingSeconds ~/ 60;
+          final seconds = remainingSeconds % 60;
+
+          if (remainingSeconds > 0) {
             widgets.add(
               Text(
-                '⏱️ $remainingMinutes мин осталось',
+                '⏱️ $minutes:${seconds.toString().padLeft(2, '0')}',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
