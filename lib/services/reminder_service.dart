@@ -34,7 +34,7 @@ class ReminderService {
       return;
     }
 
-    if (remainingMinutes == 5) {
+    if (remainingMinutes <= 5 && remainingMinutes > 4) {
       _triggerReminder(
         machine,
         notificationProvider,

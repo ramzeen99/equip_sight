@@ -35,6 +35,12 @@ class _IndexPageState extends State<IndexPage> {
   void initState() {
     super.initState();
     _checkAuthAndInitialize();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MachineProvider>().startTicker(
+        notificationProvider: context.read<NotificationProvider>(),
+        preferencesProvider: context.read<PreferencesProvider>(),
+      );
+    });
   }
 
   void _checkAuthAndInitialize() async {
@@ -84,30 +90,24 @@ class _IndexPageState extends State<IndexPage> {
     final messenger = ScaffoldMessenger.of(context);
     if (_isRefreshing) return;
 
-    setState(() {
-      _isRefreshing = true;
-    });
+    setState(() => _isRefreshing = true);
 
     try {
       final userProvider = context.read<UserProvider>();
-      final user = userProvider.currentUser;
+      final dormRef = userProvider.dormRef;
 
-      if (user == null || user.dormPath == null) {
-        throw Exception('DormPath introuvable');
+      if (dormRef == null) {
+        throw Exception('DormRef introuvable');
       }
 
-      await context.read<MachineProvider>().loadMachines(
-        user.dormPath as DocumentReference<Object?>,
-      );
+      await context.read<MachineProvider>().loadMachines(dormRef);
 
       if (!mounted) return;
 
-      await Future.delayed(const Duration(milliseconds: 500));
       messenger.showSnackBar(
         const SnackBar(
           content: Text('✅ Данные обновлены'),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
         ),
       );
     } catch (e) {
@@ -115,11 +115,7 @@ class _IndexPageState extends State<IndexPage> {
         SnackBar(content: Text('❌ Ошибка: $e'), backgroundColor: Colors.red),
       );
     } finally {
-      if (mounted) {
-        setState(() {
-          _isRefreshing = false;
-        });
-      }
+      if (mounted) setState(() => _isRefreshing = false);
     }
   }
 
@@ -195,7 +191,7 @@ class _IndexPageState extends State<IndexPage> {
   }
 
   void _showStartDialog(Machine machine) {
-    int selectedMinutes = 30; // valeur par défaut
+    int selectedMinutes = 30;
 
     showDialog(
       context: context,
@@ -272,15 +268,21 @@ class _IndexPageState extends State<IndexPage> {
   }
 
   void _showMachineInfo(Machine machine) {
-    final machineProvider = context.read<MachineProvider>();
     final userProvider = context.read<UserProvider>();
 
     final dormPath = userProvider.currentUser?.dormPath;
     if (dormPath == null) return;
 
-    final remainingTime = machineProvider.getRemainingTimeFromEndTime(
-      machine.endTime,
-    );
+    int? remainingMinutes;
+
+    if (machine.endTime != null) {
+      final diff = machine.endTime!
+          .toDate()
+          .difference(DateTime.now())
+          .inMinutes;
+
+      remainingMinutes = diff > 0 ? diff : 0;
+    }
 
     showDialog(
       context: context,
@@ -296,21 +298,16 @@ class _IndexPageState extends State<IndexPage> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
-              if (remainingTime != null)
+              if (remainingMinutes != null)
                 Text(
-                  'Осталось времени: $remainingTime минут',
+                  'Осталось времени: $remainingMinutes минут',
                   style: TextStyle(fontSize: 16, color: Colors.green),
                 ),
-              if (remainingTime == null)
+              if (remainingMinutes == null)
                 Text(
                   'Таймер активен, но время недоступно',
                   style: TextStyle(fontSize: 14, color: Colors.orange),
                 ),
-              // if (!hasActiveTimer)
-              //   Text(
-              //     'Нет активного таймера',
-              //     style: TextStyle(fontSize: 14, color: Colors.red),
-              //   ),
               SizedBox(height: 10),
               Text(
                 'Пользователь: ${machine.utilisateurActuel ?? 'Неизвестно'}',
@@ -656,30 +653,6 @@ class _IndexPageState extends State<IndexPage> {
               ),
             ],
           ),
-          SizedBox(height: 10),
-          // if (activeTimers > 0)
-          //   Container(
-          //     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          //     decoration: BoxDecoration(
-          //       color: Colors.orange.withValues(alpha: 0.2),
-          //       borderRadius: BorderRadius.circular(10),
-          //     ),
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: [
-          //         Icon(Icons.access_time, color: Colors.orange, size: 16),
-          //         SizedBox(width: 8),
-          //         Text(
-          //           '$activeTimers активный(е) таймер(ы)',
-          //           style: TextStyle(
-          //             color: Colors.orange,
-          //             fontWeight: FontWeight.bold,
-          //             fontSize: 14,
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
         ],
       ),
     );

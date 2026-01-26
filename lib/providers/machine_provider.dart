@@ -13,9 +13,42 @@ class MachineProvider with ChangeNotifier {
   bool _isLoading = false;
   List<Machine> get machines => _machines;
   bool get isLoading => _isLoading;
-  Timer? _timerChecker;
-  MachineProvider() {
-    _startTimerChecker();
+
+  Timer? _ticker;
+
+  void startTicker({
+    required NotificationProvider notificationProvider,
+    required PreferencesProvider preferencesProvider,
+  }) {
+    _ticker?.cancel();
+
+    _ticker = Timer.periodic(const Duration(seconds: 30), (_) {
+      _checkFinishedMachines(notificationProvider, preferencesProvider);
+    });
+  }
+
+  void _checkFinishedMachines(
+    NotificationProvider notificationProvider,
+    PreferencesProvider preferencesProvider,
+  ) {
+    final now = DateTime.now();
+
+    for (int i = 0; i < _machines.length; i++) {
+      final m = _machines[i];
+
+      if (m.statut == MachineStatus.occupe &&
+          m.endTime != null &&
+          m.endTime!.toDate().isBefore(now)) {
+        // 🔔 Notification
+        notificationProvider.addQuickNotification(
+          title: '⏱️ Machine terminée',
+          message: '${m.nom} a terminé son cycle',
+          preferencesProvider: preferencesProvider,
+        );
+        _machines[i] = m.copyWith(statut: MachineStatus.termine);
+      }
+    }
+    notifyListeners();
   }
 
   Future<void> loadMachines(DocumentReference dormRef) async {
@@ -61,7 +94,7 @@ class MachineProvider with ChangeNotifier {
 
       _machines[machineIndex] = _machines[machineIndex].copyWith(
         statut: MachineStatus.occupe,
-        utilisateurActuel: currentUser.displayName ?? currentUser.email,
+        utilisateurActuel: currentUser.displayName,
       );
 
       final endTime = Timestamp.fromDate(
@@ -70,7 +103,7 @@ class MachineProvider with ChangeNotifier {
 
       await dormRef.collection('machines').doc(machineId).update({
         'statut': 'occupe',
-        'utilisateurActuel': currentUser.id,
+        'utilisateurActuel': currentUser.displayName,
         'endTime': endTime,
         'lastUpdated': FieldValue.serverTimestamp(),
       });
@@ -80,16 +113,6 @@ class MachineProvider with ChangeNotifier {
       if (kDebugMode) print("Erreur demarrerMachine: $e");
       rethrow;
     }
-  }
-
-  int? getRemainingTimeFromEndTime(Timestamp? endTime) {
-    if (endTime == null) return null;
-
-    final now = DateTime.now();
-    final end = endTime.toDate();
-
-    final diff = end.difference(now).inMinutes;
-    return diff > 0 ? diff : 0;
   }
 
   Future<void> libererMachine({
@@ -120,18 +143,5 @@ class MachineProvider with ChangeNotifier {
       if (kDebugMode) print("Erreur libererMachine: $e");
       rethrow;
     }
-  }
-
-  void _startTimerChecker() {
-    _timerChecker?.cancel();
-    _timerChecker = Timer.periodic(const Duration(seconds: 60), (_) {
-      notifyListeners();
-    });
-  }
-
-  @override
-  void dispose() {
-    _timerChecker?.cancel();
-    super.dispose();
   }
 }

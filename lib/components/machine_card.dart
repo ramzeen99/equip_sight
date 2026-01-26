@@ -1,13 +1,82 @@
+import 'dart:async';
+
 import 'package:equip_sight/model/model.dart';
 import 'package:equip_sight/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MachineCard extends StatelessWidget {
+class MachineCard extends StatefulWidget {
   final Machine machine;
   final Function(Machine)? onActionPressed;
 
   const MachineCard({super.key, required this.machine, this.onActionPressed});
+
+  @override
+  State<MachineCard> createState() => _MachineCardState();
+}
+
+class _MachineCardState extends State<MachineCard> {
+  Timer? _timer;
+  int _remainingSeconds = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _initTimer();
+  }
+
+  @override
+  void didUpdateWidget(covariant MachineCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.machine.endTime != widget.machine.endTime) {
+      _initTimer();
+    }
+  }
+
+  void _initTimer() {
+    _timer?.cancel();
+
+    if (widget.machine.endTime == null ||
+        widget.machine.statut != MachineStatus.occupe) {
+      setState(() {
+        _remainingSeconds = 0;
+      });
+      return;
+    }
+
+    final initialDiff = widget.machine.endTime!
+        .toDate()
+        .difference(DateTime.now())
+        .inSeconds;
+
+    setState(() {
+      _remainingSeconds = initialDiff > 0 ? initialDiff : 0;
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+
+      final diff = widget.machine.endTime!
+          .toDate()
+          .difference(DateTime.now())
+          .inSeconds;
+
+      setState(() {
+        _remainingSeconds = diff > 0 ? diff : 0;
+      });
+
+      if (diff <= 0) {
+        _timer?.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +103,7 @@ class MachineCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          machine.nom,
+                          widget.machine.nom,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -42,7 +111,7 @@ class MachineCard extends StatelessWidget {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          machine.emplacement,
+                          widget.machine.emplacement,
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -75,7 +144,7 @@ class MachineCard extends StatelessWidget {
   Widget _buildStatusBadge() {
     Color backgroundColor;
 
-    switch (machine.statut) {
+    switch (widget.machine.statut) {
       case MachineStatus.libre:
         backgroundColor = Colors.green;
         break;
@@ -94,7 +163,7 @@ class MachineCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        '${machine.emojiStatut} ${machine.texteStatut}',
+        '${widget.machine.emojiStatut} ${widget.machine.texteStatut}',
         style: TextStyle(
           color: Colors.white,
           fontSize: 12,
@@ -108,45 +177,33 @@ class MachineCard extends StatelessWidget {
     return Consumer<UserProvider>(
       builder: (context, userProvider, child) {
         final currentUser = userProvider.currentUser;
-        final isCurrentUser = machine.utilisateurActuel == currentUser?.email;
+        final isCurrentUser =
+            widget.machine.utilisateurActuel == currentUser?.email;
 
         final widgets = <Widget>[];
 
-        if (machine.statut == MachineStatus.occupe && machine.endTime != null) {
-          final remainingSeconds = machine.endTime!
-              .toDate()
-              .difference(DateTime.now())
-              .inSeconds;
+        if (widget.machine.statut == MachineStatus.occupe &&
+            widget.machine.endTime != null) {
+          final minutes = _remainingSeconds ~/ 60;
+          final seconds = _remainingSeconds % 60;
 
-          final minutes = remainingSeconds ~/ 60;
-          final seconds = remainingSeconds % 60;
-
-          if (remainingSeconds > 0) {
-            widgets.add(
-              Text(
-                '⏱️ $minutes:${seconds.toString().padLeft(2, '0')}',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.red[700],
-                ),
+          widgets.add(
+            Text(
+              _remainingSeconds > 0
+                  ? '⏱️ $minutes:${seconds.toString().padLeft(2, '0')}'
+                  : '⏱️ Завершено',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: _remainingSeconds > 0
+                    ? Colors.red[700]
+                    : Colors.orange[700],
               ),
-            );
-          } else {
-            widgets.add(
-              Text(
-                '⏱️ Завершено',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.orange[700],
-                ),
-              ),
-            );
-          }
+            ),
+          );
         }
 
-        if (machine.utilisateurActuel != null) {
+        if (widget.machine.utilisateurActuel != null) {
           final userWidgets = <Widget>[
             SizedBox(height: widgets.isNotEmpty ? 8 : 4),
             Row(
@@ -155,7 +212,7 @@ class MachineCard extends StatelessWidget {
                 SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    isCurrentUser ? 'Вы' : machine.utilisateurActuel!,
+                    isCurrentUser ? 'Вы' : widget.machine.utilisateurActuel!,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -203,7 +260,7 @@ class MachineCard extends StatelessWidget {
     Color buttonColor;
     bool isEnabled;
 
-    switch (machine.statut) {
+    switch (widget.machine.statut) {
       case MachineStatus.libre:
         buttonText = 'НАЧАТЬ';
         buttonColor = Colors.green;
@@ -224,7 +281,9 @@ class MachineCard extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: isEnabled ? () => onActionPressed?.call(machine) : null,
+        onPressed: isEnabled
+            ? () => widget.onActionPressed?.call(widget.machine)
+            : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonColor,
           foregroundColor: Colors.white,
