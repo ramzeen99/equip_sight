@@ -112,18 +112,35 @@ class MachineCard extends StatelessWidget {
 
         final widgets = <Widget>[];
 
-        if (machine.statut == MachineStatus.occupe &&
-            machine.tempsRestant != null) {
-          widgets.add(
-            Text(
-              '⏱️ ${machine.tempsRestant} мин осталось',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.red[700],
+        if (machine.statut == MachineStatus.occupe && machine.endTime != null) {
+          final remainingMinutes = machine.endTime!
+              .toDate()
+              .difference(DateTime.now())
+              .inMinutes;
+
+          if (remainingMinutes > 0) {
+            widgets.add(
+              Text(
+                '⏱️ $remainingMinutes мин осталось',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.red[700],
+                ),
               ),
-            ),
-          );
+            );
+          } else {
+            widgets.add(
+              Text(
+                '⏱️ Завершено',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.orange[700],
+                ),
+              ),
+            );
+          }
         }
 
         if (machine.utilisateurActuel != null) {

@@ -4,47 +4,61 @@ import 'package:equip_sight/providers/notification_provider.dart';
 import 'package:equip_sight/providers/preferences_provider.dart';
 
 class ReminderService {
-  static String _generateReminderMessage(Machine machine) {
-    if (machine.endTime == null) {
-      return 'Не забудьте проверить ${machine.nom}';
-    }
-
-    final remaining = machine.endTime!
-        .toDate()
-        .difference(DateTime.now())
-        .inMinutes;
-
-    if (remaining <= 0) {
-      return '${machine.nom} должна быть завершена — не забудьте освободить';
-    }
-
-    if (remaining <= 1) {
-      return '${machine.nom} завершится через $remaining мин';
-    }
-
-    return 'Не забудьте освободить ${machine.nom}, когда она будет готова';
-  }
-
-  static void _triggerReminder(
-    Machine machine,
-    NotificationProvider notificationProvider,
-    PreferencesProvider preferencesProvider,
-  ) {
+  static void checkAndTriggerReminder({
+    required Machine machine,
+    required NotificationProvider notificationProvider,
+    required PreferencesProvider preferencesProvider,
+  }) {
     if (!preferencesProvider.isNotificationTypeEnabled(
       NotificationType.reminder,
     )) {
       return;
     }
 
-    final reminderNotification = AppNotification(
-      id: 'reminder_${machine.id}_${DateTime.now().millisecondsSinceEpoch}',
-      title: '⏰ Напоминание - ${machine.nom}',
-      message: _generateReminderMessage(machine),
+    if (machine.endTime == null || machine.statut != MachineStatus.occupe) {
+      return;
+    }
+
+    final remainingMinutes = machine.endTime!
+        .toDate()
+        .difference(DateTime.now())
+        .inMinutes;
+
+    if (remainingMinutes <= 0) {
+      _triggerReminder(
+        machine,
+        notificationProvider,
+        '⏰ ${machine.nom} terminée',
+        'La machine est prête. Merci de la libérer.',
+      );
+      return;
+    }
+
+    if (remainingMinutes == 5) {
+      _triggerReminder(
+        machine,
+        notificationProvider,
+        '⏰ Fin imminente',
+        '${machine.nom} se termine dans 5 minutes.',
+      );
+    }
+  }
+
+  static void _triggerReminder(
+    Machine machine,
+    NotificationProvider notificationProvider,
+    String title,
+    String message,
+  ) {
+    final notification = AppNotification(
+      id: 'reminder_${machine.id}_${title.hashCode}',
+      title: title,
+      message: message,
       timestamp: DateTime.now(),
       type: NotificationType.reminder,
       machineId: machine.id,
     );
 
-    notificationProvider.addNotification(reminderNotification, context: null);
+    notificationProvider.addNotification(notification, context: null);
   }
 }
