@@ -41,8 +41,8 @@ class MachineProvider with ChangeNotifier {
           m.endTime!.toDate().isBefore(now)) {
         // 🔔 Notification
         notificationProvider.addQuickNotification(
-          title: '⏱️ Machine terminée',
-          message: '${m.nom} a terminé son cycle',
+          title: '⏱️ Машина завершена',
+          message: '${m.nom} завершил свой цикл',
           preferencesProvider: preferencesProvider,
         );
         _machines[i] = m.copyWith(statut: MachineStatus.termine);
@@ -70,7 +70,7 @@ class MachineProvider with ChangeNotifier {
         );
       }).toList();
     } catch (e) {
-      if (kDebugMode) print("Erreur loadMachines: $e");
+      if (kDebugMode) print("Ошибка при загрузке машин: $e");
     }
 
     _isLoading = false;
@@ -110,7 +110,7 @@ class MachineProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      if (kDebugMode) print("Erreur demarrerMachine: $e");
+      if (kDebugMode) print("Ошибка при запуске машины: $e");
       rethrow;
     }
   }

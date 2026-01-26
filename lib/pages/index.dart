@@ -73,15 +73,15 @@ class _IndexPageState extends State<IndexPage> {
       final userProvider = context.read<UserProvider>();
       final utilisateur = userProvider.currentUser;
       if (utilisateur == null) {
-        throw Exception('Utilisateur non chargé');
+        throw Exception('Пользователь не загружен');
       }
 
       final dormRef = userProvider.dormRef;
-      if (dormRef == null) throw Exception('DormRef introuvable');
+      if (dormRef == null) throw Exception('DormRef не найден');
 
       await context.read<MachineProvider>().loadMachines(dormRef);
     } catch (e, stack) {
-      debugPrint('Erreur lors de l’initialisation des données: $e');
+      debugPrint('Ошибка при инициализации данных: $e');
       debugPrintStack(stackTrace: stack);
     }
   }
@@ -97,7 +97,7 @@ class _IndexPageState extends State<IndexPage> {
       final dormRef = userProvider.dormRef;
 
       if (dormRef == null) {
-        throw Exception('DormRef introuvable');
+        throw Exception('DormRef не найден');
       }
 
       await context.read<MachineProvider>().loadMachines(dormRef);
@@ -135,13 +135,13 @@ class _IndexPageState extends State<IndexPage> {
 
       messenger.showSnackBar(
         SnackBar(
-          content: Text('✅ ${machine.nom} démarrée pour $minutes minutes'),
+          content: Text('✅ ${machine.nom}  Запущено на $minutes минут'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
       messenger.showSnackBar(
-        SnackBar(content: Text('❌ Erreur: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text('❌ Ошибка: $e'), backgroundColor: Colors.red),
       );
     }
   }

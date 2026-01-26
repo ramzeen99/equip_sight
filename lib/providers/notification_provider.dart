@@ -61,7 +61,7 @@ class NotificationProvider with ChangeNotifier {
         // Notification automatique quand le cycle est terminé
         await addQuickNotification(
           title: "Машина завершена",
-          message: "La machine \"$machineName\" a terminé son cycle 🎉",
+          message: "Машина   \"$machineName\" закончила свой цикл 🎉",
           //type: NotificationType.machineFinished,
           preferencesProvider: preferencesProvider,
         );
