@@ -39,9 +39,7 @@ void main() async {
   await AndroidAlarmManager.initialize();
   FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
   await FirebaseMessaging.instance.requestPermission();
-
   //await syncMachinesToFirebase();
-
   runApp(const MyApp());
 }
 
@@ -124,10 +122,8 @@ class AuthWrapper extends StatelessWidget {
           dormId: userProvider.dormId,
         );
       });
-
       return const SizedBox();
     }
-
     return HomeLockedPage();
   }
 }
