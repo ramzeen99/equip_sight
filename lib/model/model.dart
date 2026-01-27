@@ -11,7 +11,7 @@ class Machine {
   final String? utilisateurActuel;
   final Timestamp? lastUpdate;
   final Timestamp? endTime;
-
+  final Timestamp? startTime;
   final String? dormPath;
 
   Machine({
@@ -24,6 +24,7 @@ class Machine {
     this.lastUpdate,
     this.dormPath,
     this.endTime,
+    this.startTime,
   });
   Machine copyWith({
     String? id,
@@ -32,6 +33,8 @@ class Machine {
     MachineStatus? statut,
     int? tempsRestant,
     String? utilisateurActuel,
+    Timestamp? endTime,
+    Timestamp? startTime,
   }) {
     return Machine(
       id: id ?? this.id,
@@ -39,7 +42,8 @@ class Machine {
       emplacement: emplacement ?? this.emplacement,
       statut: statut ?? this.statut,
       utilisateurActuel: utilisateurActuel ?? this.utilisateurActuel,
-      endTime: endTime,
+      endTime: endTime ?? this.endTime,
+      startTime: startTime ?? this.startTime,
     );
   }
 

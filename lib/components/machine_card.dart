@@ -37,36 +37,27 @@ class _MachineCardState extends State<MachineCard> {
   void _initTimer() {
     _timer?.cancel();
 
-    if (widget.machine.endTime == null ||
+    final start = widget.machine.startTime?.toDate();
+    final end = widget.machine.endTime?.toDate();
+
+    if (start == null ||
+        end == null ||
         widget.machine.statut != MachineStatus.occupe) {
-      setState(() {
-        _remainingSeconds = 0;
-      });
+      setState(() => _remainingSeconds = 0);
       return;
     }
-
-    final initialDiff = widget.machine.endTime!
-        .toDate()
-        .difference(DateTime.now())
-        .inSeconds;
-
-    setState(() {
-      _remainingSeconds = initialDiff > 0 ? initialDiff : 0;
-    });
 
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
 
-      final diff = widget.machine.endTime!
-          .toDate()
-          .difference(DateTime.now())
-          .inSeconds;
+      final now = DateTime.now().toUtc();
+      final remaining = end.difference(now).inSeconds;
 
       setState(() {
-        _remainingSeconds = diff > 0 ? diff : 0;
+        _remainingSeconds = remaining > 0 ? remaining : 0;
       });
 
-      if (diff <= 0) {
+      if (remaining <= 0) {
         _timer?.cancel();
       }
     });

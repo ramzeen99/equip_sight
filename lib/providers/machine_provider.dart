@@ -66,6 +66,7 @@ class MachineProvider with ChangeNotifier {
           emplacement: data['emplacement'] ?? '',
           statut: MachineStatus.values.byName(data['statut'] ?? 'libre'),
           utilisateurActuel: data['utilisateurActuel'],
+          startTime: data['startTime'],
           endTime: data['endTime'],
         );
       }).toList();
@@ -92,18 +93,25 @@ class MachineProvider with ChangeNotifier {
       final machineIndex = _machines.indexWhere((m) => m.id == machineId);
       if (machineIndex == -1) return;
 
-      _machines[machineIndex] = _machines[machineIndex].copyWith(
-        statut: MachineStatus.occupe,
-        utilisateurActuel: currentUser.displayName,
-      );
-
       final endTime = Timestamp.fromDate(
         DateTime.now().add(Duration(minutes: totalMinutes)),
       );
 
+      final startTime = Timestamp.now();
+
+      _machines[machineIndex] = _machines[machineIndex].copyWith(
+        statut: MachineStatus.occupe,
+        utilisateurActuel: currentUser.displayName,
+        startTime: startTime,
+        endTime: endTime,
+      );
+
+      notifyListeners();
+
       await dormRef.collection('machines').doc(machineId).update({
         'statut': 'occupe',
         'utilisateurActuel': currentUser.displayName,
+        'startTime': FieldValue.serverTimestamp(),
         'endTime': endTime,
         'lastUpdated': FieldValue.serverTimestamp(),
       });
@@ -130,6 +138,8 @@ class MachineProvider with ChangeNotifier {
       _machines[machineIndex] = _machines[machineIndex].copyWith(
         statut: MachineStatus.libre,
         utilisateurActuel: null,
+        startTime: null,
+        endTime: null,
       );
 
       await dormRef.collection('machines').doc(machineId).update({
