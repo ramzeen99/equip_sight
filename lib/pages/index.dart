@@ -179,6 +179,9 @@ class _IndexPageState extends State<IndexPage> {
   void _handleMachineAction(Machine machine) {
     switch (machine.statut) {
       case MachineStatus.libre:
+        _showReserveDialog(machine);
+        break;
+      case MachineStatus.reservee:
         _showStartDialog(machine);
         break;
       case MachineStatus.termine:
@@ -239,6 +242,35 @@ class _IndexPageState extends State<IndexPage> {
           },
         );
       },
+    );
+  }
+
+  void _showReserveDialog(Machine machine) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Réservation'),
+        content: const Text(
+          'Vous avez 5 minutes pour démarrer la machine.\n'
+          'Passé ce délai, elle sera libérée automatiquement.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await context.read<MachineProvider>().reserverMachine(
+                machineId: machine.id,
+                userProvider: context.read<UserProvider>(),
+              );
+            },
+            child: const Text('Réserver'),
+          ),
+        ],
+      ),
     );
   }
 

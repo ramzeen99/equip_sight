@@ -139,6 +139,9 @@ class _MachineCardState extends State<MachineCard> {
       case MachineStatus.libre:
         backgroundColor = Colors.green;
         break;
+      case MachineStatus.reservee:
+        backgroundColor = Colors.blue;
+        break;
       case MachineStatus.occupe:
         backgroundColor = Colors.red;
         break;
@@ -172,6 +175,30 @@ class _MachineCardState extends State<MachineCard> {
             widget.machine.utilisateurActuel == currentUser?.email;
 
         final widgets = <Widget>[];
+
+        if (widget.machine.statut == MachineStatus.reservee &&
+            widget.machine.reservationEndTime != null) {
+          final remaining = widget.machine.reservationEndTime!
+              .toDate()
+              .difference(DateTime.now())
+              .inSeconds;
+
+          widgets.add(
+            Text(
+              '⏳ Réservation: ${remaining ~/ 60}:${(remaining % 60).toString().padLeft(2, '0')}',
+              style: TextStyle(color: Colors.orange),
+            ),
+          );
+        }
+
+        if (widget.machine.statut == MachineStatus.reservee) {
+          widgets.add(
+            Text(
+              'Réservé par: ${widget.machine.reservedBy}',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          );
+        }
 
         if (widget.machine.statut == MachineStatus.occupe &&
             widget.machine.endTime != null) {
@@ -253,10 +280,21 @@ class _MachineCardState extends State<MachineCard> {
 
     switch (widget.machine.statut) {
       case MachineStatus.libre:
-        buttonText = 'НАЧАТЬ';
-        buttonColor = Colors.green;
+        buttonText = 'RÉSERVER';
+        buttonColor = Colors.blue;
         isEnabled = true;
         break;
+
+      case MachineStatus.reservee:
+        final isOwner =
+            widget.machine.reservedBy ==
+            context.read<UserProvider>().currentUser?.email;
+
+        buttonText = isOwner ? 'DÉMARRER' : 'RÉSERVÉE';
+        buttonColor = isOwner ? Colors.green : Colors.grey;
+        isEnabled = isOwner;
+        break;
+
       case MachineStatus.occupe:
         buttonText = 'ЗАНЯТО';
         buttonColor = Colors.grey;

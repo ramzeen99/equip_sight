@@ -11,6 +11,7 @@ import 'user_provider.dart';
 class MachineProvider with ChangeNotifier {
   List<Machine> _machines = [];
   bool _isLoading = false;
+  DocumentReference? _dormRef;
   List<Machine> get machines => _machines;
   bool get isLoading => _isLoading;
 
@@ -36,6 +37,22 @@ class MachineProvider with ChangeNotifier {
     for (int i = 0; i < _machines.length; i++) {
       final m = _machines[i];
 
+      if (m.statut == MachineStatus.reservee &&
+          m.reservationEndTime != null &&
+          m.reservationEndTime!.toDate().isBefore(now)) {
+        _machines[i] = m.copyWith(
+          statut: MachineStatus.libre,
+          reservedBy: null,
+          reservationEndTime: null,
+        );
+
+        _dormRef!.collection('machines').doc(m.id).update({
+          'statut': 'libre',
+          'reservedBy': null,
+          'reservationEndTime': null,
+        });
+      }
+
       if (m.statut == MachineStatus.occupe &&
           m.endTime != null &&
           m.endTime!.toDate().isBefore(now)) {
@@ -53,6 +70,7 @@ class MachineProvider with ChangeNotifier {
 
   Future<void> loadMachines(DocumentReference dormRef) async {
     _isLoading = true;
+    _dormRef = dormRef;
     notifyListeners();
 
     try {
@@ -76,6 +94,36 @@ class MachineProvider with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> reserverMachine({
+    required String machineId,
+    required UserProvider userProvider,
+  }) async {
+    final user = userProvider.currentUser;
+    final dormRef = userProvider.dormRef;
+    if (user == null || dormRef == null) return;
+
+    final index = _machines.indexWhere((m) => m.id == machineId);
+    if (index == -1) return;
+
+    final reservationEnd = Timestamp.fromDate(
+      DateTime.now().add(const Duration(minutes: 5)),
+    );
+
+    _machines[index] = _machines[index].copyWith(
+      statut: MachineStatus.reservee,
+      reservedBy: user.email,
+      reservationEndTime: reservationEnd,
+    );
+
+    notifyListeners();
+
+    await dormRef.collection('machines').doc(machineId).update({
+      'statut': 'reservee',
+      'reservedBy': user.email,
+      'reservationEndTime': reservationEnd,
+    });
   }
 
   Future<void> demarrerMachine({

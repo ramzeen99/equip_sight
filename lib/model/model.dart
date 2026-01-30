@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum MachineStatus { libre, occupe, termine }
+enum MachineStatus { libre, reservee, occupe, termine }
 
 class Machine {
   final String id;
@@ -13,6 +13,8 @@ class Machine {
   final Timestamp? endTime;
   final Timestamp? startTime;
   final String? dormPath;
+  final Timestamp? reservationEndTime;
+  final String? reservedBy;
 
   Machine({
     required this.id,
@@ -25,25 +27,28 @@ class Machine {
     this.dormPath,
     this.endTime,
     this.startTime,
+    this.reservationEndTime,
+    this.reservedBy,
   });
+
   Machine copyWith({
-    String? id,
-    String? nom,
-    String? emplacement,
     MachineStatus? statut,
-    int? tempsRestant,
     String? utilisateurActuel,
-    Timestamp? endTime,
+    String? reservedBy,
+    Timestamp? reservationEndTime,
     Timestamp? startTime,
+    Timestamp? endTime,
   }) {
     return Machine(
-      id: id ?? this.id,
-      nom: nom ?? this.nom,
-      emplacement: emplacement ?? this.emplacement,
+      id: id,
+      nom: nom,
+      emplacement: emplacement,
       statut: statut ?? this.statut,
       utilisateurActuel: utilisateurActuel ?? this.utilisateurActuel,
-      endTime: endTime ?? this.endTime,
+      reservedBy: reservedBy ?? this.reservedBy,
+      reservationEndTime: reservationEndTime ?? this.reservationEndTime,
       startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
     );
   }
 
@@ -78,6 +83,8 @@ class Machine {
     switch (status) {
       case 'libre':
         return MachineStatus.libre;
+      case 'reservee':
+        return MachineStatus.reservee;
       case 'occupe':
         return MachineStatus.occupe;
       case 'termine':
@@ -91,6 +98,8 @@ class Machine {
     switch (status) {
       case MachineStatus.libre:
         return 'libre';
+      case MachineStatus.reservee:
+        return 'reservee';
       case MachineStatus.occupe:
         return 'occupe';
       case MachineStatus.termine:
@@ -102,6 +111,8 @@ class Machine {
     switch (statut) {
       case MachineStatus.libre:
         return '🟢';
+      case MachineStatus.reservee:
+        return '🟡';
       case MachineStatus.occupe:
         return '🔴';
       case MachineStatus.termine:
@@ -113,6 +124,8 @@ class Machine {
     switch (statut) {
       case MachineStatus.libre:
         return 'СВОБОДНА';
+      case MachineStatus.reservee:
+        return 'ЗАРЕЗЕРВИРОВАНА';
       case MachineStatus.occupe:
         return 'ЗАНЯТА';
       case MachineStatus.termine:
