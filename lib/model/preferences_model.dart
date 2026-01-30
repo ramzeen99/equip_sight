@@ -1,35 +1,12 @@
 class NotificationPreferences {
   final bool machineFinished;
-  // FR : 🎉 Notifications : machines terminées
-  // RU : 🎉 Уведомления: стирка завершена
-
   final bool machineAvailable;
-  // FR : ✅ Notifications : machines disponibles
-  // RU : ✅ Уведомления: доступные машины
-
   final bool reminders;
-  // FR : ⏰ Rappels
-  // RU : ⏰ Напоминания
-
   final bool maintenance;
-  // FR : 🚧 Maintenance
-  // RU : 🚧 Техническое обслуживание
-
   final bool system;
-  // FR : ℹ️ Notifications système
-  // RU : ℹ️ Системные уведомления
-
   final bool soundEnabled;
-  // FR : 🔊 Son activé
-  // RU : 🔊 Звук включён
-
   final bool vibrationEnabled;
-  // FR : 📳 Vibration activée
-  // RU : 📳 Вибрация включена
-
   final List<String> favoriteRooms;
-  // FR : 🏠 Pièces favorites
-  // RU : 🏠 Избранные комнаты
 
   NotificationPreferences({
     this.machineFinished = true,
@@ -42,8 +19,6 @@ class NotificationPreferences {
     this.favoriteRooms = const [],
   });
 
-  // 🗺️ FR : Conversion vers une Map (pour Firestore)
-  // 🗺️ RU : Преобразование в Map (для Firestore)
   Map<String, dynamic> toMap() {
     return {
       'machineFinished': machineFinished,
@@ -57,8 +32,6 @@ class NotificationPreferences {
     };
   }
 
-  // 🏭 FR : Factory pour reconstruire depuis Firestore
-  // 🏭 RU : Factory-конструктор для восстановления данных из Firestore
   factory NotificationPreferences.fromMap(Map<String, dynamic> data) {
     return NotificationPreferences(
       machineFinished: data['machineFinished'] ?? true,
@@ -72,8 +45,6 @@ class NotificationPreferences {
     );
   }
 
-  // 📝 FR : Copier l'objet en modifiant certaines valeurs
-  // 📝 RU : Создать копию объекта с изменёнными значениями
   NotificationPreferences copyWith({
     bool? machineFinished,
     bool? machineAvailable,

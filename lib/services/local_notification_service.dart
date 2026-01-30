@@ -1,14 +1,12 @@
-// lib/services/local_notification_service.dart
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notifications =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
     const AndroidInitializationSettings androidSettings =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     const InitializationSettings settings = InitializationSettings(
       android: androidSettings,
@@ -22,22 +20,23 @@ class LocalNotificationService {
     required String body,
   }) async {
     const AndroidNotificationDetails androidDetails =
-    AndroidNotificationDetails(
-      'default_channel',
-      'Уведомления', // Traduit: Notifications -> Уведомления
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-      enableVibration: true,
-    );
+        AndroidNotificationDetails(
+          'default_channel',
+          'Уведомления',
+          importance: Importance.max,
+          priority: Priority.high,
+          playSound: true,
+          enableVibration: true,
+        );
 
-    const NotificationDetails platformDetails =
-    NotificationDetails(android: androidDetails);
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+    );
 
     await _notifications.show(
       DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title, // Titre sera fourni par l'appelant
-      body, // Corps sera fourni par l'appelant
+      title,
+      body,
       platformDetails,
     );
   }

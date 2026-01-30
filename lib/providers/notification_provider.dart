@@ -13,30 +13,17 @@ class NotificationProvider with ChangeNotifier {
   NotificationProvider() {
     instance = this;
   }
-
-  /// Liste de toutes les notifications
   final List<AppNotification> _notifications = [];
-
-  /// Nombre de notifications non lues
   int _unreadCount = 0;
-
-  /// État de l'application (foreground/background)
   AppLifecycleState _appState = AppLifecycleState.resumed;
-
-  /// Timers actifs par clé "dormPath/machineId"
   final Map<String, Timer> _activeTimers = {};
-
-  // GETTERS
   List<AppNotification> get notifications => _notifications;
   int get unreadCount => _unreadCount;
   bool get isAppInForeground => _appState == AppLifecycleState.resumed;
-
-  /// Mettre à jour l'état de l'application
   void updateAppState(AppLifecycleState state) {
     _appState = state;
   }
 
-  /// 🔹 Démarrer un timer pour une machine dans un dortoir spécifique
   void startMachineTimer({
     required String machineId,
     required String dormPath,
@@ -45,10 +32,7 @@ class NotificationProvider with ChangeNotifier {
     required String machineName,
   }) {
     final key = "$dormPath/$machineId";
-
-    // Annuler timer existant
     _activeTimers[key]?.cancel();
-
     int secondsRemaining = durationInSeconds;
 
     _activeTimers[key] = Timer.periodic(Duration(seconds: 1), (timer) async {
@@ -57,22 +41,16 @@ class NotificationProvider with ChangeNotifier {
       if (secondsRemaining <= 0) {
         timer.cancel();
         _activeTimers.remove(key);
-
-        // Notification automatique quand le cycle est terminé
         await addQuickNotification(
           title: "Машина завершена",
           message: "Машина   \"$machineName\" закончила свой цикл 🎉",
-          //type: NotificationType.machineFinished,
           preferencesProvider: preferencesProvider,
         );
       }
-
-      // Optionnel: mettre à jour UI ou compteur en temps réel
       notifyListeners();
     });
   }
 
-  /// Annuler un timer pour une machine
   void cancelMachineTimer({
     required String machineId,
     required String dormPath,
@@ -83,17 +61,14 @@ class NotificationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Vérifie si une machine a un timer actif
   bool hasActiveTimer({required String machineId, required String dormPath}) {
     final key = "$dormPath/$machineId";
     return _activeTimers.containsKey(key);
   }
 
-  /// Ajouter une notification rapide (simple)
   Future<void> addQuickNotification({
     required String title,
     required String message,
-    // required NotificationType type,
     PreferencesProvider? preferencesProvider,
     BuildContext? context,
     bool showAsPush = true,
@@ -115,7 +90,6 @@ class NotificationProvider with ChangeNotifier {
     );
   }
 
-  /// Ajouter une notification complète
   Future<void> addNotification(
     AppNotification notification, {
     PreferencesProvider? preferencesProvider,
@@ -126,7 +100,6 @@ class NotificationProvider with ChangeNotifier {
     _unreadCount++;
     notifyListeners();
 
-    // Son/vibration selon préférences
     if (preferencesProvider != null) {
       SoundVibrationService.playNotificationEffects(
         type: notification.type,
@@ -136,33 +109,30 @@ class NotificationProvider with ChangeNotifier {
 
     final messenger = context != null ? ScaffoldMessenger.of(context) : null;
 
-    // Notification locale
     try {
       await LocalNotificationService.showNotification(
         title: notification.title,
         body: notification.message,
       );
     } catch (e) {
-      debugPrint('❌ Erreur notification locale: $e');
+      debugPrint('❌ Ошибка локального уведомления: $e');
     }
 
-    // Snackbar si app visible
     if (isAppInForeground && messenger != null) {
       messenger.showSnackBar(
         SnackBar(
           content: Text('${notification.title}: ${notification.message}'),
           duration: const Duration(seconds: 3),
           action: SnackBarAction(
-            label: 'Voir',
+            label: 'Просмотреть',
             onPressed: () {
-              Navigator.pushNamed(messenger.context, 'Notifications');
+              Navigator.pushNamed(messenger.context, 'Уведомления');
             },
           ),
         ),
       );
     }
 
-    // Notification push si app en background
     if (!isAppInForeground && showAsPush) {
       try {
         await NotificationService().showNotification(
@@ -171,12 +141,11 @@ class NotificationProvider with ChangeNotifier {
           notificationId: notification.id.hashCode,
         );
       } catch (e) {
-        debugPrint('❌ Erreur push notification: $e');
+        debugPrint('❌ Ошибка push-уведомления: $e');
       }
     }
   }
 
-  /// Programmer une notification future
   Future<void> scheduleNotification({
     required String title,
     required String message,
@@ -202,11 +171,10 @@ class NotificationProvider with ChangeNotifier {
         notificationId: notification.id.hashCode,
       );
     } catch (e) {
-      debugPrint('❌ Erreur programmation notification: $e');
+      debugPrint('❌ Ошибка планирования уведомления:: $e');
     }
   }
 
-  /// Marquer une notification comme lue
   void markAsRead(String notificationId) {
     final index = _notifications.indexWhere((n) => n.id == notificationId);
     if (index != -1 && !_notifications[index].isRead) {
@@ -216,7 +184,6 @@ class NotificationProvider with ChangeNotifier {
     }
   }
 
-  /// Marquer toutes les notifications comme lues
   void markAllAsRead() {
     for (var i = 0; i < _notifications.length; i++) {
       if (!_notifications[i].isRead) {
@@ -227,7 +194,6 @@ class NotificationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Supprimer une notification
   void removeNotification(String notificationId) {
     final notification = _notifications.firstWhere(
       (n) => n.id == notificationId,
@@ -239,7 +205,6 @@ class NotificationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Nettoyer les notifications anciennes
   void clearOldNotifications({int days = 30}) {
     final cutoff = DateTime.now().subtract(Duration(days: days));
     _notifications.removeWhere((n) => n.timestamp.isBefore(cutoff));

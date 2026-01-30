@@ -28,8 +28,8 @@ class ReminderService {
       _triggerReminder(
         machine,
         notificationProvider,
-        '⏰ ${machine.nom} terminée',
-        'La machine est prête. Merci de la libérer.',
+        '⏰ ${machine.nom} завершена',
+        'Машина готова. Пожалуйста, освободите её.',
       );
       return;
     }
@@ -38,8 +38,8 @@ class ReminderService {
       _triggerReminder(
         machine,
         notificationProvider,
-        '⏰ Fin imminente',
-        '${machine.nom} se termine dans 5 minutes.',
+        '⏰ Скоро завершение',
+        '${machine.nom} закончится через 5 минут.',
       );
     }
   }

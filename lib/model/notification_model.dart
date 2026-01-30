@@ -1,27 +1,20 @@
-// lib/models/notification_model.dart
-
-// FR : Types de notifications disponibles
-// RU : Доступные типы уведомлений
 enum NotificationType {
-  machineFinished, // FR : Machine terminée — RU : Стирка завершена
-  machineAvailable, // FR : Machine disponible — RU : Машина доступна
-  reminder, // FR : Rappel — RU : Напоминание
-  maintenance, // FR : Maintenance — RU : Техническое обслуживание
-  system, // FR : Message système — RU : Системное сообщение
+  machineFinished,
+  machineAvailable,
+  reminder,
+  maintenance,
+  system,
 }
 
 class AppNotification {
-  // FR : Modèle représentant une notification dans l’application
-  // RU : Модель, представляющая уведомление в приложении
-
-  final String id; // FR : Identifiant de la notification — RU : ID уведомления
-  final String title; // FR : Titre — RU : Заголовок
-  final String message; // FR : Message — RU : Сообщение
-  final DateTime timestamp; // FR : Date et heure — RU : Дата и время
-  final bool isRead; // FR : Notification lue ou non — RU : Прочитано или нет
-  final NotificationType type; // FR : Type de notification — RU : Тип уведомления
-  final String? machineId; // FR : ID de la machine liée (si applicable) — RU : ID машины (если есть)
-  final String? userId; // FR : ID utilisateur (si applicable) — RU : ID пользователя (если есть)
+  final String id;
+  final String title;
+  final String message;
+  final DateTime timestamp;
+  final bool isRead;
+  final NotificationType type;
+  final String? machineId;
+  final String? userId;
 
   AppNotification({
     required this.id,
@@ -34,8 +27,6 @@ class AppNotification {
     this.userId,
   });
 
-  // FR : Méthode copyWith pour cloner et modifier partiellement
-  // RU : Метод copyWith для создания копии с изменёнными полями
   AppNotification copyWith({
     String? id,
     String? title,
@@ -58,18 +49,16 @@ class AppNotification {
     );
   }
 
-  // FR : Conversion en Map pour stockage Firebase
-  // RU : Преобразование в Map для сохранения в Firebase
   Map<String, dynamic> toMap() {
     return {
-      'id': id,                 // FR : Identifiant — RU : Идентификатор
-      'title': title,           // FR : Titre — RU : Заголовок
-      'message': message,       // FR : Message — RU : Сообщение
-      'timestamp': timestamp.millisecondsSinceEpoch, // FR : Horodatage — RU : Время в мс
-      'isRead': isRead,         // FR : Lu ? — RU : Прочитано?
-      'type': type.toString(),  // FR : Type — RU : Тип
-      'machineId': machineId,   // FR : ID machine — RU : ID машины
-      'userId': userId,         // FR : ID utilisateur — RU : ID пользователя
+      'id': id,
+      'title': title,
+      'message': message,
+      'timestamp': timestamp.millisecondsSinceEpoch,
+      'isRead': isRead,
+      'type': type.toString(),
+      'machineId': machineId,
+      'userId': userId,
     };
   }
 }

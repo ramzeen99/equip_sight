@@ -8,7 +8,6 @@ class AppUser {
   final String? photoURL;
   final bool? emailVerified;
 
-  /// 🔥 Nouvelle structure
   final String role;
   final String? countryId;
   final String? cityId;
@@ -31,9 +30,6 @@ class AppUser {
     this.heatLeft,
   });
 
-  // =========================
-  // Firebase Auth → AppUser
-  // =========================
   factory AppUser.fromFirebaseUser(User user, {String role = 'user'}) {
     return AppUser(
       id: user.uid,
@@ -45,9 +41,6 @@ class AppUser {
     );
   }
 
-  // =========================
-  // Firestore → AppUser
-  // =========================
   factory AppUser.fromMap(
     Map<String, dynamic> map,
     String uid,
@@ -70,9 +63,6 @@ class AppUser {
     );
   }
 
-  // =========================
-  // AppUser → Firestore
-  // =========================
   Map<String, dynamic> toMap() {
     return {
       'email': email,
@@ -89,9 +79,6 @@ class AppUser {
     };
   }
 
-  // =========================
-  // CopyWith
-  // =========================
   AppUser copyWith({
     String? displayName,
     String? photoURL,
@@ -117,13 +104,8 @@ class AppUser {
     );
   }
 
-  // =========================
-  // Helpers
-  // =========================
   String get displayNameOrEmail => displayName ?? email;
-
   bool get hasPhoto => photoURL != null && photoURL!.isNotEmpty;
-
   bool get hasDormInfo =>
       countryId != null &&
       cityId != null &&

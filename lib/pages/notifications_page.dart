@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart';
-//import 'package:timezone/timezone.dart';
 
 class NotificationsPage extends StatefulWidget {
   static const String id = 'Notifications';
@@ -34,14 +33,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Уведомления'), // Traduit: Notifications
+        title: Text('Уведомления'),
         actions: [
           Consumer<NotificationProvider>(
             builder: (context, notificationProvider, child) {
               if (notificationProvider.unreadCount > 0) {
                 return TextButton(
                   onPressed: () => notificationProvider.markAllAsRead(),
-                  child: Text('Прочитать все'), // Traduit: Mark all as read
+                  child: Text('Прочитать все'),
                 );
               }
               return SizedBox.shrink();
@@ -59,7 +58,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   Icon(Icons.notifications_none, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
                   Text(
-                    'Нет уведомлений', // Traduit: No notifications
+                    'Нет уведомлений',
                     style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
                 ],
@@ -110,8 +109,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
           if (!notification.isRead) {
             context.read<NotificationProvider>().markAsRead(notification.id);
           }
-          // Optionnel: navigation vers la machine concernée
-          // Опционально: переход к соответствующей машине
         },
       ),
     );
@@ -136,11 +133,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
 
-    if (difference.inMinutes < 1) return 'Только что'; // Traduit: Just now
-    if (difference.inMinutes < 60)
-      return '${difference.inMinutes} мин назад'; // Traduit: X minutes ago
-    if (difference.inHours < 24)
-      return '${difference.inHours} ч назад'; // Traduit: X hours ago
-    return '${difference.inDays} д назад'; // Traduit: X days ago
+    if (difference.inMinutes < 1) return 'Только что';
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} мин назад';
+    }
+    if (difference.inHours < 24) {
+      return '${difference.inHours} ч назад';
+    }
+    return '${difference.inDays} д назад';
   }
 }

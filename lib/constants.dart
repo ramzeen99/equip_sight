@@ -28,7 +28,7 @@ const colorizeColors = [
 ];
 const int totalTimeMinutes = 40;
 const kTextFieldDecoration = InputDecoration(
-  hintText: 'Введите значение', // Перевод: Enter a value
+  hintText: 'Введите значение',
   hintStyle: TextStyle(color: Colors.white24),
   contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
   border: OutlineInputBorder(
@@ -43,21 +43,17 @@ const kTextFieldDecoration = InputDecoration(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),
 );
-// Ajoute ces constantes pour les messages d'erreur / Добавить эти константы для сообщений об ошибках
 const Map<String, String> firebaseErrorMessages = {
-  // Erreurs de connexion / Ошибки входа
-  'user-not-found': 'Пользователь с таким email не найден.', // No user found with this email
-  'wrong-password': 'Неверный пароль.', // Wrong password
-  'too-many-requests': 'Слишком много попыток. Попробуйте позже.', // Too many attempts. Try again later
-  'user-disabled': 'Эта учетная запись отключена.', // This account has been disabled
+  'user-not-found': 'Пользователь с таким email не найден.',
+  'wrong-password': 'Неверный пароль.',
+  'too-many-requests': 'Слишком много попыток. Попробуйте позже.',
+  'user-disabled': 'Эта учетная запись отключена.',
 
-  // Erreurs d'inscription / Ошибки регистрации
-  'email-already-in-use': 'Этот адрес электронной почты уже используется.', // This email address is already in use
-  'invalid-email': 'Неверный адрес электронной почты.', // Invalid email address
-  'operation-not-allowed': 'Регистрация по email не включена.', // Email registration is not enabled
-  'weak-password': 'Пароль слишком слабый (минимум 6 символов).', // Password is too weak (minimum 6 characters)
+  'email-already-in-use': 'Этот адрес электронной почты уже используется.',
+  'invalid-email': 'Неверный адрес электронной почты.',
+  'operation-not-allowed': 'Регистрация по email не включена.',
+  'weak-password': 'Пароль слишком слабый (минимум 6 символов).',
 
-  // Erreurs générales / Общие ошибки
-  'network-request-failed': 'Ошибка подключения. Проверьте интернет.', // Connection error. Check your internet
-  'requires-recent-login': 'Сессия истекла. Войдите снова.', // Session expired. Log in again
+  'network-request-failed': 'Ошибка подключения. Проверьте интернет.',
+  'requires-recent-login': 'Сессия истекла. Войдите снова.',
 };

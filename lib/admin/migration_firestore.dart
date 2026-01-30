@@ -15,8 +15,8 @@ Future<void> migrateMachines() async {
         .set({
           "name": machine.nom,
           "status": machine.statut == MachineStatus.libre
-              ? "available"
-              : "occupied",
+              ? "СВОБОДНА"
+              : "ЗАНЯТА",
           "heatLeft": machine.heatLeft,
           "utilisateurActuel": machine.utilisateurActuel,
           "lastUpdate": FieldValue.serverTimestamp(),

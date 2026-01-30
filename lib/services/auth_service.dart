@@ -19,7 +19,7 @@ class AuthService {
     final userDoc = await _firestore.collection('users').doc(uid).get();
 
     if (!userDoc.exists) {
-      throw Exception('Utilisateur non trouvé dans Firestore');
+      throw Exception('Пользователь не найден в Firestore');
     }
 
     return userDoc.data()!;
@@ -29,7 +29,7 @@ class AuthService {
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
     if (googleUser == null) {
-      throw Exception("Connexion annulée");
+      throw Exception("Вход отменён");
     }
 
     final GoogleSignInAuthentication googleAuth =

@@ -13,7 +13,6 @@ class UserProvider with ChangeNotifier {
   String? get error => _error;
   bool get isLoggedIn => _currentUser != null;
 
-  // 🔹 Champs normalisés
   String? get role => _currentUser?.role;
   String? get countryId => _currentUser?.countryId;
   String? get cityId => _currentUser?.cityId;
@@ -27,7 +26,6 @@ class UserProvider with ChangeNotifier {
     _initializeAuthListener();
   }
 
-  // 🔹 Écoute authentification
   void _initializeAuthListener() {
     _auth.authStateChanges().listen(
       (User? user) async {
@@ -51,7 +49,6 @@ class UserProvider with ChangeNotifier {
     );
   }
 
-  // 🔹 Chargement Firestore
   Future<void> _loadUserFromFirestore(User user) async {
     try {
       final userDoc = await _firestore.collection('users').doc(user.uid).get();
@@ -70,13 +67,12 @@ class UserProvider with ChangeNotifier {
             .set(_currentUser!.toMap());
       }
     } catch (e) {
-      _error = "Erreur chargement Firestore user: $e";
+      _error = "Ошибка загрузки пользователя из Firestore: $e";
       _currentUser = AppUser.fromFirebaseUser(user);
     }
     notifyListeners();
   }
 
-  // 🔹 Attente explicite (utile au démarrage)
   Future<void> waitForInitialization() async {
     if (!_isLoading) return;
     await Future.doWhile(() async {
@@ -85,7 +81,6 @@ class UserProvider with ChangeNotifier {
     });
   }
 
-  // 🔹 Mise à jour profil
   Future<void> updateProfile({String? displayName, String? photoURL}) async {
     try {
       if (_auth.currentUser == null) return;
@@ -115,13 +110,12 @@ class UserProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      _error = "Erreur update profile: $e";
+      _error = "Ошибка обновления профиля: $e";
       notifyListeners();
       rethrow;
     }
   }
 
-  // 🔹 Mise à jour rattachement (DORTOIR / UNIVERSITÉ)
   Future<void> updateDormInfo({
     required String countryId,
     required String cityId,
@@ -151,13 +145,12 @@ class UserProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      _error = "Erreur update dorm info: $e";
+      _error = "Ошибка обновления информации о общежитии: $e";
       notifyListeners();
       rethrow;
     }
   }
 
-  // 🔹 Déconnexion
   Future<void> signOut() async {
     try {
       await _auth.signOut();
@@ -165,7 +158,7 @@ class UserProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _error = "Erreur signOut: $e";
+      _error = "Ошибка выхода из системы: $e";
       notifyListeners();
       rethrow;
     }

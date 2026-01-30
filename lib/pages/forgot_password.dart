@@ -5,8 +5,6 @@ import 'package:equip_sight/pages/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-// FR : Page de récupération du mot de passe
-// RU : Страница восстановления пароля
 class ForgotPasswordPage extends StatefulWidget {
   static const String id = 'ForgotPassword';
   const ForgotPasswordPage({super.key});
@@ -24,8 +22,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   bool showError = false;
   String? successMessage;
 
-  // FR : Méthode pour afficher l'erreur
-  // RU : Метод для отображения ошибки
   void _showError(String message) {
     setState(() {
       errorMessage = message;
@@ -34,8 +30,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     });
   }
 
-  // FR : Méthode pour afficher le succès
-  // RU : Метод для отображения успешного сообщения
   void _showSuccess(String message) {
     setState(() {
       successMessage = message;
@@ -44,48 +38,33 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     });
   }
 
-  // FR : Traduire les erreurs Firebase en texte
-  // RU : Перевод ошибок Firebase в текст
   String _translateFirebaseError(String errorCode) {
     const Map<String, String> firebaseErrorMessages = {
-      'user-not-found':
-          'Пользователь с этим email не найден.', // Aucun utilisateur trouvé avec cet email
-      'invalid-email':
-          'Неверный адрес электронной почты.', // Adresse email invalide
-      'user-disabled':
-          'Этот аккаунт был отключен.', // Ce compte a été désactivé
-      'too-many-requests':
-          'Слишком много попыток. Попробуйте позже.', // Trop de tentatives
-      'network-request-failed':
-          'Ошибка подключения. Проверьте интернет.', // Erreur de connexion
+      'user-not-found': 'Пользователь с этим email не найден.',
+      'invalid-email': 'Неверный адрес электронной почты.',
+      'user-disabled': 'Этот аккаунт был отключен.',
+      'too-many-requests': 'Слишком много попыток. Попробуйте позже.',
+      'network-request-failed': 'Ошибка подключения. Проверьте интернет.',
     };
 
     return firebaseErrorMessages[errorCode] ??
-        'Произошла ошибка. Пожалуйста, попробуйте снова.'; // Une erreur est survenue
+        'Произошла ошибка. Пожалуйста, попробуйте снова.';
   }
 
-  // FR : Valider l'email
-  // RU : Проверка email
   bool _validateEmail() {
     if (email.isEmpty) {
-      _showError(
-        'Пожалуйста, введите ваш email',
-      ); // Veuillez entrer votre adresse email
+      _showError('Пожалуйста, введите ваш email');
       return false;
     }
 
     if (!email.contains('@') || !email.contains('.')) {
-      _showError(
-        'Пожалуйста, введите корректный email',
-      ); // Veuillez entrer une adresse email valide
+      _showError('Пожалуйста, введите корректный email');
       return false;
     }
 
     return true;
   }
 
-  // FR : Envoyer l'email de réinitialisation
-  // RU : Отправка письма для сброса пароля
   Future<void> _sendPasswordResetEmail() async {
     FocusScope.of(context).unfocus();
 
@@ -99,10 +78,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());
-      _showSuccess(
-        'Письмо для сброса пароля отправлено на $email',
-      ); // Un email de réinitialisation a été envoyé
-      //print('✅ Email envoyé à: $email');
+      _showSuccess('Письмо для сброса пароля отправлено на $email');
 
       setState(() {
         showSpinner = false;
@@ -110,17 +86,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     } on FirebaseAuthException catch (e) {
       String message = _translateFirebaseError(e.code);
       _showError(message);
-      //print('🔥 Ошибка Firebase: ${e.code} - ${e.message}');
-
       setState(() {
         showSpinner = false;
         emailSent = false;
       });
     } catch (e) {
-      _showError(
-        'Произошла непредвиденная ошибка',
-      ); // Une erreur inattendue est survenue
-      //print('❌ Ошибка сброса пароля: $e');
+      _showError('Произошла непредвиденная ошибка');
 
       setState(() {
         showSpinner = false;
@@ -140,12 +111,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // FR : Revenir en arrière
-            // RU : Вернуться назад
+            Navigator.pop(context);
           },
         ),
         title: Text(
-          'Восстановление пароля', // FR : Récupération mot de passe
+          'Восстановление пароля',
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
       ),
@@ -158,32 +128,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 SizedBox(height: 20.0),
-
-                // FR : TITRE
-                // RU : ЗАГОЛОВОК
                 TitleAppDesign(textTitle: 'СБРОС'),
                 TitleAppDesign(textTitle: 'ПАРОЛЯ'),
-
                 SizedBox(height: 20.0),
-
-                // FR : ICÔNE
-                // RU : ИКОНКА
                 Icon(Icons.lock_reset, size: 80, color: Colors.white),
-
                 SizedBox(height: 30.0),
-
-                // FR : MESSAGE EXPLICATIF
-                // RU : Поясняющее сообщение
                 Text(
                   'Введите ваш email, и мы отправим ссылку для сброса пароля.',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
-
                 SizedBox(height: 30.0),
-
-                // FR : MESSAGE D'ERREUR
-                // RU : Сообщение об ошибке
                 if (showError && errorMessage != null)
                   Container(
                     width: double.infinity,
@@ -210,9 +165,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ],
                     ),
                   ),
-
-                // FR : MESSAGE DE SUCCÈS
-                // RU : Сообщение об успешной отправке
                 if (successMessage != null)
                   Container(
                     width: double.infinity,
@@ -241,15 +193,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
 
                 SizedBox(height: 20.0),
-
-                // FR : CHAMP EMAIL
-                // RU : Поле ввода email (если письмо не отправлено)
                 if (!emailSent)
                   Column(
                     children: [
                       EmailField(
-                        hintText:
-                            'Введите ваш email', // FR : Entrez votre email
+                        hintText: 'Введите ваш email',
                         onChanged: (value) {
                           setState(() {
                             email = value;
@@ -259,12 +207,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                       SizedBox(height: 30.0),
 
-                      // FR : BOUTON ENVOYER
-                      // RU : КНОПКА ОТПРАВИТЬ
                       SizedBox(
                         width: double.infinity,
                         child: ButtonLoginSignup(
-                          textButton: 'ОТПРАВИТЬ ССЫЛКУ', // ENVOYER LE LIEN
+                          textButton: 'ОТПРАВИТЬ ССЫЛКУ',
                           colorButton: Color(0xFF1E40AF),
                           sizeButton: 20.0,
                           colorText: Colors.white,
@@ -274,8 +220,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ],
                   ),
 
-                // FR : MESSAGE APRÈS ENVOI RÉUSSI
-                // RU : Сообщение после успешной отправки
                 if (emailSent)
                   Column(
                     children: [
@@ -286,8 +230,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                       SizedBox(height: 20),
 
-                      // FR : INSTRUCTIONS
-                      // RU : ИНСТРУКЦИЯ
                       Container(
                         padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -297,7 +239,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         child: Column(
                           children: [
                             Text(
-                              '📧 Проверьте вашу почту', // Vérifiez votre boîte mail
+                              '📧 Проверьте вашу почту',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -320,12 +262,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                       SizedBox(height: 30),
 
-                      // FR : BOUTON RETOUR À LA CONNEXION
-                      // RU : КНОПКА ВОЙТИ
                       SizedBox(
                         width: double.infinity,
                         child: ButtonLoginSignup(
-                          textButton: 'ВОЙТИ', // RETOUR À LA CONNEXION
+                          textButton: 'ВОЙТИ',
                           colorButton: Colors.green,
                           sizeButton: 15.0,
                           colorText: Colors.white,
@@ -333,18 +273,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             Navigator.pushNamedAndRemoveUntil(
                               context,
                               Login.id,
-                              (route) =>
-                                  false, // FR : Supprime toutes les routes
-                              // RU : Удалить все маршруты
+                              (route) => false,
                             );
                           },
                         ),
                       ),
 
                       SizedBox(height: 20),
-
-                      // FR : BOUTON RÉESSAYER
-                      // RU : КНОПКА ПОВТОРИТЬ
                       OutlinedButton(
                         onPressed: () {
                           setState(() {
@@ -361,7 +296,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             vertical: 5,
                           ),
                         ),
-                        child: Text('ПОВТОРИТЬ'), // RÉESSAYER
+                        child: Text('ПОВТОРИТЬ'),
                       ),
                     ],
                   ),

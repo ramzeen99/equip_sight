@@ -11,7 +11,6 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Заголовок страницы настроек / Titre de la page des paramètres
       appBar: AppBar(title: Text('Настройки уведомлений')),
       body: Consumer<PreferencesProvider>(
         builder: (context, preferencesProvider, child) {
@@ -20,7 +19,6 @@ class SettingsPage extends StatelessWidget {
           return ListView(
             padding: EdgeInsets.all(16),
             children: [
-              // Секция типов уведомлений / Section types de notifications
               _buildSectionHeader('🔔 Типы уведомлений'),
               _buildNotificationSwitch(
                 'Завершение стирки',
@@ -51,7 +49,6 @@ class SettingsPage extends StatelessWidget {
               ),
 
               SizedBox(height: 24),
-              // Секция настроек / Section préférences
               _buildSectionHeader('🎛️ Настройки'),
               _buildNotificationSwitch(
                 'Включить звук',
@@ -73,7 +70,6 @@ class SettingsPage extends StatelessWidget {
               ),
 
               SizedBox(height: 24),
-              // Секция избранных помещений / Section pièces favorites
               _buildSectionHeader('🏠 Избранные помещения'),
               _buildFavoriteRoomsSection(context, prefs),
             ],
@@ -83,7 +79,6 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  // Виджет заголовка секции / Widget d'en-tête de section
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8),
@@ -98,7 +93,6 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  // Виджет переключателя уведомлений / Widget interrupteur de notification
   Widget _buildNotificationSwitch(
     String title,
     String subtitle,
@@ -114,7 +108,6 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  // Секция избранных помещений / Section pièces favorites
   Widget _buildFavoriteRoomsSection(
     BuildContext context,
     NotificationPreferences prefs,
@@ -162,7 +155,6 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  // Метод обновления настроек / Méthode de mise à jour des préférences
   void _updatePreference(
     BuildContext context,
     NotificationPreferences newPrefs,

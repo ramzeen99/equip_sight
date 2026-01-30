@@ -257,7 +257,7 @@ class _LoginState extends State<Login> {
 
                                       if (!userDoc.exists) {
                                         throw Exception(
-                                          'Utilisateur non trouvé',
+                                          'Пользователь не найден',
                                         );
                                       }
 

@@ -49,9 +49,6 @@ class _RegistrationState extends State<Registration> {
     loadCountries();
   }
 
-  // =========================
-  // Firestore: charger dynamiquement
-  // =========================
   Future<void> loadCountries() async {
     final snapshot = await _firestore.collection('countries').get();
     setState(() {
@@ -111,9 +108,6 @@ class _RegistrationState extends State<Registration> {
     });
   }
 
-  // =========================
-  // Gestion des erreurs
-  // =========================
   void _showError(String message) {
     setState(() {
       errorMessage = message;
@@ -146,9 +140,6 @@ class _RegistrationState extends State<Registration> {
         'Произошла ошибка. Код: $errorCode';
   }
 
-  // =========================
-  // Validation des champs
-  // =========================
   bool _validateFields() {
     if (name.isEmpty || name.length < 2) {
       _showError('Пожалуйста, введите ваше имя (минимум 2 символа)');
@@ -176,9 +167,6 @@ class _RegistrationState extends State<Registration> {
     return true;
   }
 
-  // =========================
-  // Build
-  // =========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -270,9 +258,8 @@ class _RegistrationState extends State<Registration> {
 
                   SizedBox(height: 20),
 
-                  // ===== Dropdowns Pays → Ville → Université → Dortoir =====
                   _buildDropdown(
-                    label: 'Pays',
+                    label: 'Страна',
                     value: selectedCountry,
                     items: countries,
                     onChanged: (val) {
@@ -283,7 +270,7 @@ class _RegistrationState extends State<Registration> {
                     },
                   ),
                   _buildDropdown(
-                    label: 'Ville',
+                    label: 'Город',
                     value: selectedCity,
                     items: cities,
                     onChanged: (val) {
@@ -296,7 +283,7 @@ class _RegistrationState extends State<Registration> {
                     },
                   ),
                   _buildDropdown(
-                    label: 'Université',
+                    label: 'Университет',
                     value: selectedUniversity,
                     items: universities,
                     onChanged: (val) {
@@ -311,7 +298,7 @@ class _RegistrationState extends State<Registration> {
                     },
                   ),
                   _buildDropdown(
-                    label: 'Dortoir',
+                    label: 'Общежитие',
                     value: selectedDorm,
                     items: dorms,
                     onChanged: (val) {
@@ -383,7 +370,7 @@ class _RegistrationState extends State<Registration> {
           filled: true,
         ),
         initialValue: value,
-        hint: Text("Sélectionnez $label"),
+        hint: Text("Выберите $label"),
         items: items
             .map((e) => DropdownMenuItem(value: e, child: Text(e)))
             .toList(),
@@ -392,9 +379,6 @@ class _RegistrationState extends State<Registration> {
     );
   }
 
-  // =========================
-  // INSCRIPTION
-  // =========================
   Future<void> _registerUser() async {
     FocusScope.of(context).unfocus();
     if (!_validateFields()) return;
@@ -411,7 +395,7 @@ class _RegistrationState extends State<Registration> {
       );
 
       final user = userCredential.user;
-      if (user == null) throw Exception("Erreur utilisateur");
+      if (user == null) throw Exception("Ошибка пользователя");
 
       await user.updateDisplayName(name.trim());
       await user.reload();

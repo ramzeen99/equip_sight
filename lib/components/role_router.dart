@@ -18,7 +18,6 @@ void navigateByRole(
     case 'super_admin':
       targetPage = const AdminDashboard();
       break;
-
     case 'university_admin':
       targetPage = UniversityDashboard(
         universityId: universityId,
@@ -26,7 +25,6 @@ void navigateByRole(
         cityId: cityId,
       );
       break;
-
     case 'dorm_admin':
       targetPage = DormitoryDashboard(
         countryId: countryId,
@@ -35,7 +33,6 @@ void navigateByRole(
         dormId: dormId,
       );
       break;
-
     default:
       targetPage = IndexPage();
   }

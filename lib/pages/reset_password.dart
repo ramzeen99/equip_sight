@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class ResetWithCodePage extends StatefulWidget {
   static const String id = 'ResetWithCodePage';
@@ -21,7 +21,9 @@ class _ResetWithCodePageState extends State<ResetWithCodePage> {
   Future<void> _resetPassword() async {
     final navigator = Navigator.of(context);
     if (code.isEmpty) {
-      setState(() => errorMessage = 'Введите код, полученный по электронной почте');
+      setState(
+        () => errorMessage = 'Введите код, полученный по электронной почте',
+      );
       return;
     }
 
@@ -41,8 +43,6 @@ class _ResetWithCodePageState extends State<ResetWithCodePage> {
     });
 
     try {
-      // Dans la réalité, tu devrais utiliser le code pour vérifier
-      // Но для упрощения просто проверяем, что пользователь авторизован
       final user = _auth.currentUser;
 
       if (user != null) {
@@ -52,7 +52,7 @@ class _ResetWithCodePageState extends State<ResetWithCodePage> {
         });
 
         Future.delayed(Duration(seconds: 2), () {
-          navigator.popUntil( (route) => route.isFirst);
+          navigator.popUntil((route) => route.isFirst);
         });
       } else {
         setState(() => errorMessage = 'Пожалуйста, войдите снова');
@@ -70,7 +70,7 @@ class _ResetWithCodePageState extends State<ResetWithCodePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Новый пароль'), // Новый пароль
+        title: Text('Новый пароль'),
         backgroundColor: Color(0xFF459380),
       ),
       body: Padding(
@@ -79,7 +79,7 @@ class _ResetWithCodePageState extends State<ResetWithCodePage> {
           children: [
             TextField(
               decoration: InputDecoration(
-                labelText: 'Код из электронной почты', // Код из электронной почты
+                labelText: 'Код из электронной почты',
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) => code = value,
@@ -90,7 +90,7 @@ class _ResetWithCodePageState extends State<ResetWithCodePage> {
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'Новый пароль', // Новый пароль
+                labelText: 'Новый пароль',
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) => newPassword = value,
@@ -101,7 +101,7 @@ class _ResetWithCodePageState extends State<ResetWithCodePage> {
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'Подтвердите пароль', // Подтвердите пароль
+                labelText: 'Подтвердите пароль',
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) => confirmPassword = value,
@@ -137,9 +137,9 @@ class _ResetWithCodePageState extends State<ResetWithCodePage> {
               child: showSpinner
                   ? CircularProgressIndicator(color: Colors.white)
                   : Text(
-                'Сбросить пароль', // Сбросить пароль
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
+                      'Сбросить пароль',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
             ),
           ],
         ),

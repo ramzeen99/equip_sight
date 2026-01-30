@@ -1,5 +1,3 @@
-// lib/services/notification_service.dart
-// lib/services/notification_service.dart
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -7,30 +5,21 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-/// Service singleton pour gérer toutes les notifications locales et push
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
 
   late FlutterLocalNotificationsPlugin _plugin;
-
-  /// Navigator key pour gérer la navigation depuis la notification
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  /// Initialise le service
   Future<void> initialize() async {
     _plugin = FlutterLocalNotificationsPlugin();
-
-    // Initialisation des fuseaux horaires
     tz.initializeTimeZones();
-
-    // Paramètres Android
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
 
-    // Paramètres iOS
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -48,17 +37,14 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse:
           _handleBackgroundNotificationClick,
     );
-
-    // Créer les canaux de notification
     await _createChannels();
   }
 
-  /// Création des canaux de notification Android
   Future<void> _createChannels() async {
     const mainChannel = AndroidNotificationChannel(
       'equip_sight_channel',
-      'Notifications EquipSight',
-      description: 'Notifications principales de l’application',
+      'Уведомления EquipSight',
+      description: 'Основные уведомления приложения',
       importance: Importance.high,
       playSound: true,
       enableVibration: true,
@@ -67,7 +53,7 @@ class NotificationService {
     const reminderChannel = AndroidNotificationChannel(
       'reminder_channel',
       'Rappels machines',
-      description: 'Notifications pour les machines terminées',
+      description: 'Уведомления о завершённых машинах',
       importance: Importance.max,
       playSound: true,
       enableVibration: true,
@@ -84,7 +70,6 @@ class NotificationService {
     }
   }
 
-  /// Affiche une notification immédiate
   Future<void> showNotification({
     required String title,
     required String body,
@@ -118,7 +103,6 @@ class NotificationService {
     await _plugin.show(id, title, body, details, payload: payload);
   }
 
-  /// Planifie une notification à une date et heure précises
   Future<void> scheduleNotification({
     required String title,
     required String body,
@@ -158,12 +142,10 @@ class NotificationService {
       details,
       payload: payload,
       androidScheduleMode: AndroidScheduleMode.alarmClock,
-      //uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
-  /// Planifie une notification spécifique à une machine
   Future<void> scheduleMachineNotification({
     required String machineId,
     required String machineName,
@@ -174,8 +156,8 @@ class NotificationService {
     final notificationId = machineId.hashCode;
     final payload = 'machine_finished|$machineId|${userId ?? ''}';
     await scheduleNotification(
-      title: 'Machine terminée',
-      body: 'Votre machine "$machineName" a terminé son cycle 🎉',
+      title: 'Машина завершила работу',
+      body: 'Ваша машина «$machineName» завершила цикл 🎉',
       scheduledTime: endTime,
       notificationId: notificationId,
       channelId: channelId,
@@ -183,17 +165,14 @@ class NotificationService {
     );
   }
 
-  /// Annule une notification planifiée
   Future<void> cancelNotification(int notificationId) async {
     await _plugin.cancel(notificationId);
   }
 
-  /// Annule toutes les notifications
   Future<void> cancelAllNotifications() async {
     await _plugin.cancelAll();
   }
 
-  /// Gestion du clic sur notification
   void _handleNotificationClick(NotificationResponse response) {
     _handleNotificationAction(response);
   }
@@ -234,7 +213,6 @@ class NotificationService {
     }
   }
 
-  /// Vérifie si les notifications sont autorisées (Android 13+)
   Future<bool> checkPermission() async {
     final androidPlugin = _plugin
         .resolvePlatformSpecificImplementation<

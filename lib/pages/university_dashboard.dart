@@ -62,7 +62,7 @@ class _UniversityDashboardState extends State<UniversityDashboard> {
               widget.cityId!,
             );
           } catch (e) {
-            debugPrint('Erreur getUniversityStats: $e');
+            debugPrint('Ошибка getUniversityStats: $e');
             rethrow;
           }
         }(),

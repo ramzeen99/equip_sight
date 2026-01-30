@@ -39,8 +39,8 @@ class EmailField extends StatelessWidget {
         keyboardType: TextInputType.emailAddress,
         onChanged: onChanged,
         decoration: kTextFieldDecoration.copyWith(
-          hintText: hintText ?? 'EMAIL',
-          labelText: 'EMAIL',
+          hintText: hintText ?? 'ЭЛЕКТРОННАЯ ПОЧТА',
+          labelText: 'ЭЛЕКТРОННАЯ ПОЧТА',
           labelStyle: TextStyle(color: Colors.white70),
         ),
       ),

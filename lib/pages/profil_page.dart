@@ -102,18 +102,22 @@ class ProfilePage extends StatelessWidget {
           ],
           SizedBox(height: 20),
 
-          _buildBadge(Icons.flag, "Pays", user.countryId ?? "Non défini"),
+          _buildBadge(Icons.flag, "Страна", user.countryId ?? "Не определено"),
           _buildBadge(
             Icons.location_city,
-            "Ville",
-            user.cityId ?? "Non défini",
+            "Город",
+            user.cityId ?? "Не определено",
           ),
           _buildBadge(
             Icons.school,
-            "Université",
-            user.universityId ?? "Non défini",
+            "Университет",
+            user.universityId ?? "Не определено",
           ),
-          _buildBadge(Icons.apartment, "Dortoir", user.dormId ?? "Non défini"),
+          _buildBadge(
+            Icons.apartment,
+            "Общежитие",
+            user.dormId ?? "Не определено",
+          ),
 
           SizedBox(height: 32),
 
@@ -164,18 +168,18 @@ class ProfilePage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('Modifier имя'),
+        title: Text('Изменить имя'),
         content: TextField(
           controller: controller,
           decoration: InputDecoration(
-            labelText: "Nom d'affichage",
+            labelText: "Отображаемое имя",
             border: OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Annuler"),
+            child: Text("Отмена"),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -186,14 +190,13 @@ class ProfilePage extends StatelessWidget {
               if (!context.mounted) return;
               Navigator.pop(context);
             },
-            child: Text("Sauvegarder"),
+            child: Text("Сохранить"),
           ),
         ],
       ),
     );
   }
 
-  // 🏫 Modifier localisation & dortoir
   void _showEditLocationDialog(
     BuildContext context,
     AppUser user,
@@ -262,7 +265,7 @@ class ProfilePage extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: Text("Modifier dortoir & localisation"),
+              title: Text("Изменить общежитие и местоположение"),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -351,7 +354,7 @@ class ProfilePage extends StatelessWidget {
                               .toList();
                       setStateDialog(() {});
                     },
-                    decoration: InputDecoration(labelText: "Université"),
+                    decoration: InputDecoration(labelText: "Университет"),
                   ),
                   DropdownButtonFormField(
                     initialValue: newDorm,
@@ -359,14 +362,14 @@ class ProfilePage extends StatelessWidget {
                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
                     onChanged: (v) => setStateDialog(() => newDorm = v),
-                    decoration: InputDecoration(labelText: "Dortoir"),
+                    decoration: InputDecoration(labelText: "Общежитие"),
                   ),
                 ],
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text("Annuler"),
+                  child: Text("Отмена"),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -384,7 +387,7 @@ class ProfilePage extends StatelessWidget {
                     if (!context.mounted) return;
                     Navigator.pop(context);
                   },
-                  child: Text("Sauvegarder"),
+                  child: Text("Сохранить"),
                 ),
               ],
             );

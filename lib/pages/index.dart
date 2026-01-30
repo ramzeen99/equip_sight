@@ -249,15 +249,15 @@ class _IndexPageState extends State<IndexPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Réservation'),
+        title: const Text('Бронирование'),
         content: const Text(
-          'Vous avez 5 minutes pour démarrer la machine.\n'
-          'Passé ce délai, elle sera libérée automatiquement.',
+          'У вас есть 5 минут, чтобы запустить машину.\n'
+          'По истечении этого времени она будет автоматически освобождена.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
+            child: const Text('Отмена'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -267,7 +267,7 @@ class _IndexPageState extends State<IndexPage> {
                 userProvider: context.read<UserProvider>(),
               );
             },
-            child: const Text('Réserver'),
+            child: const Text('Забронировать'),
           ),
         ],
       ),

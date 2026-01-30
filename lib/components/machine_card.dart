@@ -19,6 +19,9 @@ class _MachineCardState extends State<MachineCard> {
   Timer? _timer;
   int _remainingSeconds = 0;
 
+  Timer? _reservationTimer;
+  int _reservationRemainingSeconds = 0;
+
   @override
   void initState() {
     super.initState();
@@ -36,36 +39,47 @@ class _MachineCardState extends State<MachineCard> {
 
   void _initTimer() {
     _timer?.cancel();
+    _reservationTimer?.cancel();
 
-    final start = widget.machine.startTime?.toDate();
-    final end = widget.machine.endTime?.toDate();
+    if (widget.machine.statut == MachineStatus.occupe &&
+        widget.machine.endTime != null) {
+      final end = widget.machine.endTime!.toDate();
 
-    if (start == null ||
-        end == null ||
-        widget.machine.statut != MachineStatus.occupe) {
-      setState(() => _remainingSeconds = 0);
-      return;
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (!mounted) return;
+
+        final remaining = end.difference(DateTime.now()).inSeconds;
+
+        setState(() {
+          _remainingSeconds = remaining > 0 ? remaining : 0;
+        });
+
+        if (remaining <= 0) _timer?.cancel();
+      });
     }
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
+    if (widget.machine.statut == MachineStatus.reservee &&
+        widget.machine.reservationEndTime != null) {
+      final end = widget.machine.reservationEndTime!.toDate();
 
-      final now = DateTime.now().toUtc();
-      final remaining = end.difference(now).inSeconds;
+      _reservationTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (!mounted) return;
 
-      setState(() {
-        _remainingSeconds = remaining > 0 ? remaining : 0;
+        final remaining = end.difference(DateTime.now()).inSeconds;
+
+        setState(() {
+          _reservationRemainingSeconds = remaining > 0 ? remaining : 0;
+        });
+
+        if (remaining <= 0) _reservationTimer?.cancel();
       });
-
-      if (remaining <= 0) {
-        _timer?.cancel();
-      }
-    });
+    }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _reservationTimer?.cancel();
     super.dispose();
   }
 
@@ -178,16 +192,14 @@ class _MachineCardState extends State<MachineCard> {
 
         if (widget.machine.statut == MachineStatus.reservee &&
             widget.machine.reservationEndTime != null) {
-          final remaining = widget.machine.reservationEndTime!
-              .toDate()
-              .difference(DateTime.now())
-              .inSeconds;
+          final minutes = _reservationRemainingSeconds ~/ 60;
+          final seconds = _reservationRemainingSeconds % 60;
 
-          widgets.add(
-            Text(
-              '⏳ Réservation: ${remaining ~/ 60}:${(remaining % 60).toString().padLeft(2, '0')}',
-              style: TextStyle(color: Colors.orange),
-            ),
+          Text(
+            _reservationRemainingSeconds > 0
+                ? '⏳ Réservation: $minutes:${seconds.toString().padLeft(2, '0')}'
+                : '⏳ Réservation expirée',
+            style: const TextStyle(color: Colors.orange),
           );
         }
 

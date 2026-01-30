@@ -113,7 +113,7 @@ class MachineProvider with ChangeNotifier {
 
     _machines[index] = _machines[index].copyWith(
       statut: MachineStatus.reservee,
-      reservedBy: user.email,
+      reservedBy: user.displayName,
       reservationEndTime: reservationEnd,
     );
 
@@ -121,7 +121,7 @@ class MachineProvider with ChangeNotifier {
 
     await dormRef.collection('machines').doc(machineId).update({
       'statut': 'reservee',
-      'reservedBy': user.email,
+      'reservedBy': user.displayName,
       'reservationEndTime': reservationEnd,
     });
   }

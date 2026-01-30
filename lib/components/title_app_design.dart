@@ -11,7 +11,6 @@ class TitleAppDesign extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTextStyle(
       style: titreStyle,
-
       child: AnimatedTextKit(
         animatedTexts: [
           ColorizeAnimatedText(
@@ -20,7 +19,6 @@ class TitleAppDesign extends StatelessWidget {
             colors: colorizeColors,
           ),
         ],
-
         isRepeatingAnimation: true,
         repeatForever: true,
       ),

@@ -12,8 +12,6 @@ class HelpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // FR: Titre de l'application
-        // RU: Заголовок приложения
         title: TitleAppDesign(textTitle: 'ПОМOЩЬ'),
         backgroundColor: Color(0xFF459380),
         foregroundColor: Colors.white,
@@ -23,9 +21,6 @@ class HelpPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🎯 SECTION: COMMENT UTILISER L'APPLICATION
-            // FR: Section sur l'utilisation de l'application
-            // RU: Раздел о том, как использовать приложение
             _buildSection(
               title: 'Как использовать приложение',
               icon: Icons.play_circle_fill,
@@ -64,9 +59,6 @@ class HelpPage extends StatelessWidget {
 
             SizedBox(height: 24),
 
-            // 🔔 SECTION: NOTIFICATIONS
-            // FR: Section des notifications
-            // RU: Раздел уведомлений
             _buildSection(
               title: 'Уведомления',
               icon: Icons.notifications,
@@ -89,9 +81,6 @@ class HelpPage extends StatelessWidget {
 
             SizedBox(height: 24),
 
-            // ⚠️ SECTION: PROBLÈMES COURANTS
-            // FR: Section des problèmes fréquents
-            // RU: Раздел часто встречающихся проблем
             _buildSection(
               title: 'Решение проблем',
               icon: Icons.warning,
@@ -126,9 +115,6 @@ class HelpPage extends StatelessWidget {
 
             SizedBox(height: 24),
 
-            // 📱 SECTION: INFORMATIONS TECHNIQUES
-            // FR: Section des informations techniques
-            // RU: Раздел технической информации
             _buildSection(
               title: 'Техническая информация',
               icon: Icons.phone_android,
@@ -160,9 +146,6 @@ class HelpPage extends StatelessWidget {
 
             SizedBox(height: 24),
 
-            // 📞 SECTION: CONTACT
-            // FR: Section contact et support
-            // RU: Раздел контактов и поддержки
             _buildSection(
               title: 'Контакты и поддержка',
               icon: Icons.contact_support,
@@ -197,9 +180,6 @@ class HelpPage extends StatelessWidget {
 
             SizedBox(height: 32),
 
-            // ℹ️ DISCLAIMER
-            // FR: Avertissement
-            // RU: Важная информация
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -241,7 +221,6 @@ class HelpPage extends StatelessWidget {
     );
   }
 
-  // 🎯 CONSTRUIRE UNE SECTION
   Widget _buildSection({
     required String title,
     required IconData icon,
@@ -271,7 +250,6 @@ class HelpPage extends StatelessWidget {
     );
   }
 
-  // 📝 CONSTRUIRE UNE ÉTAPE
   Widget _buildStep({
     required int number,
     required String title,
@@ -328,7 +306,6 @@ class HelpPage extends StatelessWidget {
     );
   }
 
-  // ℹ️ CONSTRUIRE UN ITEM D'INFORMATION
   Widget _buildInfoItem({required IconData icon, required String text}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 12),
@@ -343,7 +320,6 @@ class HelpPage extends StatelessWidget {
     );
   }
 
-  // ❓ CONSTRUIRE UNE FAQ
   Widget _buildFAQItem({required String question, required String answer}) {
     return Container(
       margin: EdgeInsets.only(bottom: 12),
@@ -370,7 +346,6 @@ class HelpPage extends StatelessWidget {
     );
   }
 
-  // 🔧 CONSTRUIRE UN ITEM TECHNIQUE
   Widget _buildTechItem({
     required IconData icon,
     required String text,
@@ -384,7 +359,6 @@ class HelpPage extends StatelessWidget {
     );
   }
 
-  // 🐛 DIALOG DE SIGNALEMENT DE BUG
   void _showBugReportDialog(BuildContext context) {
     showDialog(
       context: context,
