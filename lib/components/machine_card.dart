@@ -8,9 +8,7 @@ import 'package:provider/provider.dart';
 class MachineCard extends StatefulWidget {
   final Machine machine;
   final Function(Machine)? onActionPressed;
-
   const MachineCard({super.key, required this.machine, this.onActionPressed});
-
   @override
   State<MachineCard> createState() => _MachineCardState();
 }
@@ -26,54 +24,69 @@ class _MachineCardState extends State<MachineCard> {
   void initState() {
     super.initState();
     _initTimer();
+    _initReservationTimer();
   }
 
   @override
   void didUpdateWidget(covariant MachineCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-
     if (oldWidget.machine.endTime != widget.machine.endTime) {
       _initTimer();
+    }
+
+    if (oldWidget.machine.reservationEndTime !=
+        widget.machine.reservationEndTime) {
+      _initReservationTimer();
     }
   }
 
   void _initTimer() {
     _timer?.cancel();
+    final start = widget.machine.startTime?.toDate();
+    final end = widget.machine.endTime?.toDate();
+    if (start == null ||
+        end == null ||
+        widget.machine.statut != MachineStatus.occupe) {
+      setState(() => _remainingSeconds = 0);
+      return;
+    }
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      final now = DateTime.now().toUtc();
+      final remaining = end.difference(now).inSeconds;
+      setState(() {
+        _remainingSeconds = remaining > 0 ? remaining : 0;
+      });
+      if (remaining <= 0) {
+        _timer?.cancel();
+      }
+    });
+  }
+
+  void _initReservationTimer() {
     _reservationTimer?.cancel();
 
-    if (widget.machine.statut == MachineStatus.occupe &&
-        widget.machine.endTime != null) {
-      final end = widget.machine.endTime!.toDate();
-
-      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-        if (!mounted) return;
-
-        final remaining = end.difference(DateTime.now()).inSeconds;
-
-        setState(() {
-          _remainingSeconds = remaining > 0 ? remaining : 0;
-        });
-
-        if (remaining <= 0) _timer?.cancel();
-      });
+    if (widget.machine.statut != MachineStatus.reservee ||
+        widget.machine.reservationEndTime == null) {
+      setState(() => _reservationRemainingSeconds = 0);
+      return;
     }
 
-    if (widget.machine.statut == MachineStatus.reservee &&
-        widget.machine.reservationEndTime != null) {
-      final end = widget.machine.reservationEndTime!.toDate();
+    final end = widget.machine.reservationEndTime!.toDate();
 
-      _reservationTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-        if (!mounted) return;
+    _reservationTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
 
-        final remaining = end.difference(DateTime.now()).inSeconds;
+      final remaining = end.difference(DateTime.now()).inSeconds;
 
-        setState(() {
-          _reservationRemainingSeconds = remaining > 0 ? remaining : 0;
-        });
-
-        if (remaining <= 0) _reservationTimer?.cancel();
+      setState(() {
+        _reservationRemainingSeconds = remaining > 0 ? remaining : 0;
       });
-    }
+
+      if (remaining <= 0) {
+        _reservationTimer?.cancel();
+      }
+    });
   }
 
   @override
@@ -127,17 +140,11 @@ class _MachineCardState extends State<MachineCard> {
                   ),
                 ],
               ),
-
               SizedBox(height: 12),
-
               _buildStatusBadge(),
-
               SizedBox(height: 12),
-
               _buildDynamicContent(context),
-
               SizedBox(height: 16),
-
               _buildActionButton(),
             ],
           ),
@@ -148,7 +155,6 @@ class _MachineCardState extends State<MachineCard> {
 
   Widget _buildStatusBadge() {
     Color backgroundColor;
-
     switch (widget.machine.statut) {
       case MachineStatus.libre:
         backgroundColor = Colors.green;
@@ -163,7 +169,6 @@ class _MachineCardState extends State<MachineCard> {
         backgroundColor = Colors.orange;
         break;
     }
-
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -187,22 +192,18 @@ class _MachineCardState extends State<MachineCard> {
         final currentUser = userProvider.currentUser;
         final isCurrentUser =
             widget.machine.utilisateurActuel == currentUser?.email;
-
         final widgets = <Widget>[];
-
         if (widget.machine.statut == MachineStatus.reservee &&
             widget.machine.reservationEndTime != null) {
-          final minutes = _reservationRemainingSeconds ~/ 60;
-          final seconds = _reservationRemainingSeconds % 60;
+          final remaining = _reservationRemainingSeconds;
 
-          Text(
-            _reservationRemainingSeconds > 0
-                ? '⏳ Réservation: $minutes:${seconds.toString().padLeft(2, '0')}'
-                : '⏳ Réservation expirée',
-            style: const TextStyle(color: Colors.orange),
+          widgets.add(
+            Text(
+              '⏳ Réservation: ${remaining ~/ 60}:${(remaining % 60).toString().padLeft(2, '0')}',
+              style: TextStyle(color: Colors.orange),
+            ),
           );
         }
-
         if (widget.machine.statut == MachineStatus.reservee) {
           widgets.add(
             Text(
@@ -211,12 +212,10 @@ class _MachineCardState extends State<MachineCard> {
             ),
           );
         }
-
         if (widget.machine.statut == MachineStatus.occupe &&
             widget.machine.endTime != null) {
           final minutes = _remainingSeconds ~/ 60;
           final seconds = _remainingSeconds % 60;
-
           widgets.add(
             Text(
               _remainingSeconds > 0
@@ -232,7 +231,6 @@ class _MachineCardState extends State<MachineCard> {
             ),
           );
         }
-
         if (widget.machine.utilisateurActuel != null) {
           final userWidgets = <Widget>[
             SizedBox(height: widgets.isNotEmpty ? 8 : 4),
@@ -255,7 +253,6 @@ class _MachineCardState extends State<MachineCard> {
               ],
             ),
           ];
-
           if (isCurrentUser && currentUser?.photoURL != null) {
             userWidgets.addAll([
               SizedBox(height: 4),
@@ -268,7 +265,6 @@ class _MachineCardState extends State<MachineCard> {
               ),
             ]);
           }
-
           widgets.add(
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,7 +272,6 @@ class _MachineCardState extends State<MachineCard> {
             ),
           );
         }
-
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: widgets,
@@ -289,24 +284,20 @@ class _MachineCardState extends State<MachineCard> {
     String buttonText;
     Color buttonColor;
     bool isEnabled;
-
     switch (widget.machine.statut) {
       case MachineStatus.libre:
         buttonText = 'RÉSERVER';
         buttonColor = Colors.blue;
         isEnabled = true;
         break;
-
       case MachineStatus.reservee:
         final isOwner =
             widget.machine.reservedBy ==
             context.read<UserProvider>().currentUser?.email;
-
         buttonText = isOwner ? 'DÉMARRER' : 'RÉSERVÉE';
         buttonColor = isOwner ? Colors.green : Colors.grey;
         isEnabled = isOwner;
         break;
-
       case MachineStatus.occupe:
         buttonText = 'ЗАНЯТО';
         buttonColor = Colors.grey;
@@ -318,7 +309,6 @@ class _MachineCardState extends State<MachineCard> {
         isEnabled = true;
         break;
     }
-
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
