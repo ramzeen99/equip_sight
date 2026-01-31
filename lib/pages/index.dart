@@ -35,12 +35,12 @@ class _IndexPageState extends State<IndexPage> {
   void initState() {
     super.initState();
     _checkAuthAndInitialize();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MachineProvider>().startTicker(
-        notificationProvider: context.read<NotificationProvider>(),
-        preferencesProvider: context.read<PreferencesProvider>(),
-      );
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   context.read<MachineProvider>().startTicker(
+    //     notificationProvider: context.read<NotificationProvider>(),
+    //     preferencesProvider: context.read<PreferencesProvider>(),
+    //   );
+    // });
   }
 
   void _checkAuthAndInitialize() async {

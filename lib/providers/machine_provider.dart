@@ -15,63 +15,63 @@ class MachineProvider with ChangeNotifier {
   List<Machine> get machines => _machines;
   bool get isLoading => _isLoading;
 
-  Timer? _ticker;
+  // Timer? _ticker;
 
-  void startTicker({
-    required NotificationProvider notificationProvider,
-    required PreferencesProvider preferencesProvider,
-  }) {
-    _ticker?.cancel();
-
-    _ticker = Timer.periodic(const Duration(seconds: 30), (_) {
-      _checkFinishedMachines(notificationProvider, preferencesProvider);
-    });
-  }
-
-  void _checkFinishedMachines(
-    NotificationProvider notificationProvider,
-    PreferencesProvider preferencesProvider,
-  ) {
-    final now = DateTime.now();
-
-    for (int i = 0; i < _machines.length; i++) {
-      final m = _machines[i];
-
-      if (m.statut == MachineStatus.reservee &&
-          m.reservationEndTime != null &&
-          m.reservationEndTime!.toDate().isBefore(now)) {
-        _machines[i] = m.copyWith(
-          statut: MachineStatus.libre,
-          reservedBy: null,
-          reservationEndTime: null,
-        );
-
-        _dormRef!.collection('machines').doc(m.id).update({
-          'statut': 'libre',
-          'reservedBy': null,
-          'reservationEndTime': null,
-        });
-      }
-
-      if (m.statut == MachineStatus.occupe &&
-          m.endTime != null &&
-          m.endTime!.toDate().isBefore(now)) {
-        // 🔔 Notification
-        notificationProvider.addQuickNotification(
-          title: '⏱️ Машина завершена',
-          message: '${m.nom} завершил свой цикл',
-          preferencesProvider: preferencesProvider,
-        );
-        _machines[i] = m.copyWith(statut: MachineStatus.termine);
-
-        _dormRef!.collection('machines').doc(m.id).update({
-          'statut': 'termine',
-          'lastUpdated': FieldValue.serverTimestamp(),
-        });
-      }
-    }
-    notifyListeners();
-  }
+  // void startTicker({
+  //   required NotificationProvider notificationProvider,
+  //   required PreferencesProvider preferencesProvider,
+  // }) {
+  //   _ticker?.cancel();
+  //
+  //   _ticker = Timer.periodic(const Duration(seconds: 30), (_) {
+  //     _checkFinishedMachines(notificationProvider, preferencesProvider);
+  //   });
+  // }
+  //
+  // void _checkFinishedMachines(
+  //   NotificationProvider notificationProvider,
+  //   PreferencesProvider preferencesProvider,
+  // ) {
+  //   final now = DateTime.now();
+  //
+  //   for (int i = 0; i < _machines.length; i++) {
+  //     final m = _machines[i];
+  //
+  //     if (m.statut == MachineStatus.reservee &&
+  //         m.reservationEndTime != null &&
+  //         m.reservationEndTime!.toDate().isBefore(now)) {
+  //       _machines[i] = m.copyWith(
+  //         statut: MachineStatus.libre,
+  //         reservedBy: null,
+  //         reservationEndTime: null,
+  //       );
+  //
+  //       _dormRef!.collection('machines').doc(m.id).update({
+  //         'statut': 'libre',
+  //         'reservedBy': null,
+  //         'reservationEndTime': null,
+  //       });
+  //     }
+  //
+  //     if (m.statut == MachineStatus.occupe &&
+  //         m.endTime != null &&
+  //         m.endTime!.toDate().isBefore(now)) {
+  //       // 🔔 Notification
+  //       notificationProvider.addQuickNotification(
+  //         title: '⏱️ Машина завершена',
+  //         message: '${m.nom} завершил свой цикл',
+  //         preferencesProvider: preferencesProvider,
+  //       );
+  //       _machines[i] = m.copyWith(statut: MachineStatus.termine);
+  //
+  //       _dormRef!.collection('machines').doc(m.id).update({
+  //         'statut': 'termine',
+  //         'lastUpdated': FieldValue.serverTimestamp(),
+  //       });
+  //     }
+  //   }
+  //   notifyListeners();
+  // }
 
   Future<void> loadMachines(DocumentReference dormRef) async {
     _isLoading = true;
@@ -103,6 +103,36 @@ class MachineProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Future<void> reserverMachine({
+  //   required String machineId,
+  //   required UserProvider userProvider,
+  // }) async {
+  //   final user = userProvider.currentUser;
+  //   final dormRef = userProvider.dormRef;
+  //   if (user == null || dormRef == null) return;
+  //
+  //   final index = _machines.indexWhere((m) => m.id == machineId);
+  //   if (index == -1) return;
+  //
+  //   final reservationEnd = Timestamp.fromDate(
+  //     DateTime.now().add(const Duration(minutes: 5)),
+  //   );
+  //
+  //   _machines[index] = _machines[index].copyWith(
+  //     statut: MachineStatus.reservee,
+  //     reservedBy: user.displayName,
+  //     reservationEndTime: reservationEnd,
+  //   );
+  //
+  //   notifyListeners();
+  //
+  //   await dormRef.collection('machines').doc(machineId).update({
+  //     'statut': 'reservee',
+  //     'reservedBy': user.displayName,
+  //     'reservationEndTime': reservationEnd,
+  //   });
+  // }
+
   Future<void> reserverMachine({
     required String machineId,
     required UserProvider userProvider,
@@ -111,25 +141,15 @@ class MachineProvider with ChangeNotifier {
     final dormRef = userProvider.dormRef;
     if (user == null || dormRef == null) return;
 
-    final index = _machines.indexWhere((m) => m.id == machineId);
-    if (index == -1) return;
-
     final reservationEnd = Timestamp.fromDate(
       DateTime.now().add(const Duration(minutes: 5)),
     );
 
-    _machines[index] = _machines[index].copyWith(
-      statut: MachineStatus.reservee,
-      reservedBy: user.displayName,
-      reservationEndTime: reservationEnd,
-    );
-
-    notifyListeners();
-
     await dormRef.collection('machines').doc(machineId).update({
       'statut': 'reservee',
       'reservedBy': user.displayName,
-      'reservationEndTime': reservationEnd,
+      'reservationStart': FieldValue.serverTimestamp(),
+      'reservationEnd': reservationEnd,
     });
   }
 
