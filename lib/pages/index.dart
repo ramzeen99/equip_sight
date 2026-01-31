@@ -182,7 +182,13 @@ class _IndexPageState extends State<IndexPage> {
         _showReserveDialog(machine);
         break;
       case MachineStatus.reservee:
-        _showStartDialog(machine);
+        final currentUser = context.read<UserProvider>().currentUser;
+
+        if (machine.reservedBy == currentUser?.displayName) {
+          _showStartDialog(machine);
+        } else {
+          _showReservedInfo(machine);
+        }
         break;
       case MachineStatus.termine:
         _showReleaseDialog(machine);
@@ -191,6 +197,25 @@ class _IndexPageState extends State<IndexPage> {
         _showMachineInfo(machine);
         break;
     }
+  }
+
+  void _showReservedInfo(Machine machine) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Машина зарезервирована'),
+        content: Text(
+          'Эта машина зарезервирована пользователем ${machine.reservedBy}.\n'
+          'Пожалуйста, подождите.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showStartDialog(Machine machine) {

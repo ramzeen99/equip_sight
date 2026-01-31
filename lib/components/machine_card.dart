@@ -192,6 +192,8 @@ class _MachineCardState extends State<MachineCard> {
         final currentUser = userProvider.currentUser;
         final isCurrentUser =
             widget.machine.utilisateurActuel == currentUser?.email;
+        final isReservationOwner =
+            widget.machine.reservedBy == currentUser?.displayName;
         final widgets = <Widget>[];
         if (widget.machine.statut == MachineStatus.reservee &&
             widget.machine.reservationEndTime != null) {
@@ -199,7 +201,7 @@ class _MachineCardState extends State<MachineCard> {
 
           widgets.add(
             Text(
-              '⏳ Réservation: ${remaining ~/ 60}:${(remaining % 60).toString().padLeft(2, '0')}',
+              '⏳ Бронирование: ${remaining ~/ 60}:${(remaining % 60).toString().padLeft(2, '0')}',
               style: TextStyle(color: Colors.orange),
             ),
           );
@@ -207,11 +209,12 @@ class _MachineCardState extends State<MachineCard> {
         if (widget.machine.statut == MachineStatus.reservee) {
           widgets.add(
             Text(
-              'Réservé par: ${widget.machine.reservedBy}',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              'Забронировано пользователем: ${isReservationOwner ? "Вы" : widget.machine.reservedBy}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           );
         }
+
         if (widget.machine.statut == MachineStatus.occupe &&
             widget.machine.endTime != null) {
           final minutes = _remainingSeconds ~/ 60;
@@ -286,15 +289,14 @@ class _MachineCardState extends State<MachineCard> {
     bool isEnabled;
     switch (widget.machine.statut) {
       case MachineStatus.libre:
-        buttonText = 'RÉSERVER';
+        buttonText = 'ЗАБРОНИРОВАТЬ';
         buttonColor = Colors.blue;
         isEnabled = true;
         break;
       case MachineStatus.reservee:
-        final isOwner =
-            widget.machine.reservedBy ==
-            context.read<UserProvider>().currentUser?.email;
-        buttonText = isOwner ? 'DÉMARRER' : 'RÉSERVÉE';
+        final currentUser = context.read<UserProvider>().currentUser;
+        final isOwner = widget.machine.reservedBy == currentUser?.displayName;
+        buttonText = isOwner ? 'ЗАПУСТИТЬ' : 'ЗАБРОНИРОВАНА';
         buttonColor = isOwner ? Colors.green : Colors.grey;
         isEnabled = isOwner;
         break;
@@ -313,8 +315,15 @@ class _MachineCardState extends State<MachineCard> {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: isEnabled
-            ? () => widget.onActionPressed?.call(widget.machine)
+            ? () {
+                if (widget.machine.statut == MachineStatus.libre) {
+                  widget.onActionPressed?.call(widget.machine);
+                } else if (widget.machine.statut == MachineStatus.reservee) {
+                  widget.onActionPressed?.call(widget.machine);
+                }
+              }
             : null,
+
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonColor,
           foregroundColor: Colors.white,

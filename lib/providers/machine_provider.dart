@@ -86,6 +86,8 @@ class MachineProvider with ChangeNotifier {
           utilisateurActuel: data['utilisateurActuel'],
           startTime: data['startTime'],
           endTime: data['endTime'],
+          reservedBy: data['reservedBy'],
+          reservationEndTime: data['reservationEndTime'],
         );
       }).toList();
     } catch (e) {
@@ -153,6 +155,11 @@ class MachineProvider with ChangeNotifier {
         startTime: startTime,
         endTime: endTime,
       );
+
+      if (_machines[machineIndex].statut == MachineStatus.reservee &&
+          _machines[machineIndex].reservedBy != currentUser.displayName) {
+        throw Exception('Вы не можете запустить эту машину');
+      }
 
       notifyListeners();
 
