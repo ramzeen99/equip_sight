@@ -63,6 +63,11 @@ class MachineProvider with ChangeNotifier {
           preferencesProvider: preferencesProvider,
         );
         _machines[i] = m.copyWith(statut: MachineStatus.termine);
+
+        _dormRef!.collection('machines').doc(m.id).update({
+          'statut': 'termine',
+          'lastUpdated': FieldValue.serverTimestamp(),
+        });
       }
     }
     notifyListeners();
@@ -149,17 +154,21 @@ class MachineProvider with ChangeNotifier {
 
       final startTime = Timestamp.now();
 
-      _machines[machineIndex] = _machines[machineIndex].copyWith(
+      final machine = _machines[machineIndex];
+
+      if (machine.statut == MachineStatus.reservee &&
+          machine.reservedBy != currentUser.displayName) {
+        throw Exception('Вы не можете запустить эту машину');
+      }
+
+      _machines[machineIndex] = machine.copyWith(
         statut: MachineStatus.occupe,
         utilisateurActuel: currentUser.displayName,
         startTime: startTime,
         endTime: endTime,
+        reservedBy: null,
+        reservationEndTime: null,
       );
-
-      if (_machines[machineIndex].statut == MachineStatus.reservee &&
-          _machines[machineIndex].reservedBy != currentUser.displayName) {
-        throw Exception('Вы не можете запустить эту машину');
-      }
 
       notifyListeners();
 
@@ -195,11 +204,15 @@ class MachineProvider with ChangeNotifier {
         utilisateurActuel: null,
         startTime: null,
         endTime: null,
+        reservedBy: null,
+        reservationEndTime: null,
       );
 
       await dormRef.collection('machines').doc(machineId).update({
         'statut': 'libre',
         'utilisateurActuel': null,
+        'reservedBy': null,
+        'reservationEndTime': null,
         'lastUpdated': FieldValue.serverTimestamp(),
       });
 

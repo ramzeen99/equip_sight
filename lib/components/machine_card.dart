@@ -316,14 +316,9 @@ class _MachineCardState extends State<MachineCard> {
       child: ElevatedButton(
         onPressed: isEnabled
             ? () {
-                if (widget.machine.statut == MachineStatus.libre) {
-                  widget.onActionPressed?.call(widget.machine);
-                } else if (widget.machine.statut == MachineStatus.reservee) {
-                  widget.onActionPressed?.call(widget.machine);
-                }
+                widget.onActionPressed?.call(widget.machine);
               }
             : null,
-
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonColor,
           foregroundColor: Colors.white,
