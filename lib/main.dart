@@ -22,6 +22,8 @@ import 'pages/home_locked.dart';
 import 'pages/onboarding.dart';
 import 'services/local_notification_service.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   LocalNotificationService.showNotification(
@@ -68,6 +70,7 @@ class MyApp extends StatelessWidget {
       ],
 
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         home: const AuthWrapper(),
         routes: {

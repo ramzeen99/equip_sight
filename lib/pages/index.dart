@@ -184,7 +184,7 @@ class _IndexPageState extends State<IndexPage> {
       case MachineStatus.reservee:
         final currentUser = context.read<UserProvider>().currentUser;
 
-        if (machine.reservedBy == currentUser?.displayName) {
+        if (machine.reservedByName == currentUser?.displayName) {
           _showStartDialog(machine);
         } else {
           _showReservedInfo(machine);
@@ -205,7 +205,7 @@ class _IndexPageState extends State<IndexPage> {
       builder: (_) => AlertDialog(
         title: const Text('Машина зарезервирована'),
         content: Text(
-          'Эта машина зарезервирована пользователем ${machine.reservedBy}.\n'
+          'Эта машина зарезервирована пользователем ${machine.reservedByName}.\n'
           'Пожалуйста, подождите.',
         ),
         actions: [

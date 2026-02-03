@@ -14,7 +14,7 @@ class Machine {
   final Timestamp? startTime;
   final String? dormPath;
   final Timestamp? reservationEndTime;
-  final String? reservedBy;
+  final String? reservedByName;
 
   Machine({
     required this.id,
@@ -28,13 +28,13 @@ class Machine {
     this.endTime,
     this.startTime,
     this.reservationEndTime,
-    this.reservedBy,
+    this.reservedByName,
   });
 
   Machine copyWith({
     MachineStatus? statut,
     String? utilisateurActuel,
-    String? reservedBy,
+    String? reservedByName,
     Timestamp? reservationEndTime,
     Timestamp? startTime,
     Timestamp? endTime,
@@ -45,7 +45,7 @@ class Machine {
       emplacement: emplacement,
       statut: statut ?? this.statut,
       utilisateurActuel: utilisateurActuel ?? this.utilisateurActuel,
-      reservedBy: reservedBy ?? this.reservedBy,
+      reservedByName: reservedByName ?? reservedByName,
       reservationEndTime: reservationEndTime ?? this.reservationEndTime,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,

@@ -12,6 +12,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
+import '../main.dart';
+
 class Login extends StatefulWidget {
   static const String id = 'Login';
   const Login({super.key});
@@ -363,14 +365,21 @@ class _LoginState extends State<Login> {
   }
 }
 
-void saveFcmToken() async {
+Future<void> saveFcmToken() async {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) return;
 
   final fcmToken = await FirebaseMessaging.instance.getToken();
-  if (fcmToken != null) {
-    await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-      'fcmToken': fcmToken,
-    });
-  }
+  if (fcmToken == null) return;
+
+  final tokenRef = FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .collection('fcmTokens')
+      .doc(fcmToken);
+
+  await tokenRef.set({
+    'platform': Theme.of(navigatorKey.currentContext!).platform.name,
+    'updatedAt': FieldValue.serverTimestamp(),
+  });
 }

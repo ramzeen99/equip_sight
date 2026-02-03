@@ -193,7 +193,7 @@ class _MachineCardState extends State<MachineCard> {
         final isCurrentUser =
             widget.machine.utilisateurActuel == currentUser?.email;
         final isReservationOwner =
-            widget.machine.reservedBy == currentUser?.displayName;
+            widget.machine.reservedByName == currentUser?.displayName;
         final widgets = <Widget>[];
         if (widget.machine.statut == MachineStatus.reservee &&
             widget.machine.reservationEndTime != null) {
@@ -209,7 +209,7 @@ class _MachineCardState extends State<MachineCard> {
         if (widget.machine.statut == MachineStatus.reservee) {
           widgets.add(
             Text(
-              'Забронировано пользователем: ${isReservationOwner ? "Вы" : widget.machine.reservedBy}',
+              'Забронировано пользователем: ${isReservationOwner ? "Вы" : widget.machine.reservedByName}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           );
@@ -295,7 +295,8 @@ class _MachineCardState extends State<MachineCard> {
         break;
       case MachineStatus.reservee:
         final currentUser = context.read<UserProvider>().currentUser;
-        final isOwner = widget.machine.reservedBy == currentUser?.displayName;
+        final isOwner =
+            widget.machine.reservedByName == currentUser?.displayName;
         buttonText = isOwner ? 'ЗАПУСТИТЬ' : 'ЗАБРОНИРОВАНА';
         buttonColor = isOwner ? Colors.green : Colors.grey;
         isEnabled = isOwner;
