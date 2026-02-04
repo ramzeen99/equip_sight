@@ -28,19 +28,12 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> {
   Timer? _timer;
-  bool _isRefreshing = false;
   bool _isCheckingAuth = true;
 
   @override
   void initState() {
     super.initState();
     _checkAuthAndInitialize();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   context.read<MachineProvider>().startTicker(
-    //     notificationProvider: context.read<NotificationProvider>(),
-    //     preferencesProvider: context.read<PreferencesProvider>(),
-    //   );
-    // });
   }
 
   void _checkAuthAndInitialize() async {
@@ -79,43 +72,10 @@ class _IndexPageState extends State<IndexPage> {
       final dormRef = userProvider.dormRef;
       if (dormRef == null) throw Exception('DormRef не найден');
 
-      await context.read<MachineProvider>().loadMachines(dormRef);
+      context.read<MachineProvider>().listenToMachines(dormRef);
     } catch (e, stack) {
       debugPrint('Ошибка при инициализации данных: $e');
       debugPrintStack(stackTrace: stack);
-    }
-  }
-
-  Future<void> _refreshData() async {
-    final messenger = ScaffoldMessenger.of(context);
-    if (_isRefreshing) return;
-
-    setState(() => _isRefreshing = true);
-
-    try {
-      final userProvider = context.read<UserProvider>();
-      final dormRef = userProvider.dormRef;
-
-      if (dormRef == null) {
-        throw Exception('DormRef не найден');
-      }
-
-      await context.read<MachineProvider>().loadMachines(dormRef);
-
-      if (!mounted) return;
-
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('✅ Данные обновлены'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(content: Text('❌ Ошибка: $e'), backgroundColor: Colors.red),
-      );
-    } finally {
-      if (mounted) setState(() => _isRefreshing = false);
     }
   }
 
@@ -464,23 +424,6 @@ class _IndexPageState extends State<IndexPage> {
         ),
         title: const TitleAppDesign(textTitle: 'EquipSight'),
         actions: [
-          _isRefreshing
-              ? const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  ),
-                )
-              : IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: _refreshData,
-                  tooltip: 'Обновить',
-                ),
           Stack(
             children: [
               IconButton(
@@ -529,7 +472,7 @@ class _IndexPageState extends State<IndexPage> {
       drawer: _buildDrawer(),
       body: Consumer<MachineProvider>(
         builder: (context, machineProvider, child) {
-          if (machineProvider.isLoading && !_isRefreshing) {
+          if (machineProvider.isLoading) {
             return _buildLoadingScreen();
           }
 
@@ -773,11 +716,6 @@ class _IndexPageState extends State<IndexPage> {
           const Text(
             'Нет доступных машин',
             style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-          const SizedBox(height: 8),
-          ElevatedButton(
-            onPressed: _refreshData,
-            child: const Text('Попробовать снова'),
           ),
         ],
       ),
