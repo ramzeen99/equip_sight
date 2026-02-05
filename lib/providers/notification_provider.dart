@@ -7,12 +7,10 @@ import 'package:equip_sight/services/notification_service.dart';
 import 'package:equip_sight/services/sound_vibration_service.dart';
 import 'package:flutter/material.dart';
 
-class NotificationProvider with ChangeNotifier {
-  static late NotificationProvider instance;
+import '../main.dart';
+import '../pages/notifications_page.dart';
 
-  NotificationProvider() {
-    instance = this;
-  }
+class NotificationProvider with ChangeNotifier {
   final List<AppNotification> _notifications = [];
   int _unreadCount = 0;
   AppLifecycleState _appState = AppLifecycleState.resumed;
@@ -119,14 +117,17 @@ class NotificationProvider with ChangeNotifier {
     }
 
     if (isAppInForeground && messenger != null) {
-      messenger.showSnackBar(
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
         SnackBar(
           content: Text('${notification.title}: ${notification.message}'),
           duration: const Duration(seconds: 3),
           action: SnackBarAction(
             label: 'Просмотреть',
             onPressed: () {
-              Navigator.pushNamed(messenger.context, 'Уведомления');
+              Navigator.pushNamed(
+                navigatorKey.currentContext!,
+                NotificationsPage.id,
+              );
             },
           ),
         ),

@@ -5,6 +5,9 @@ import 'package:equip_sight/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/machine_provider.dart';
+import '../providers/notification_provider.dart';
+
 class MachineCard extends StatefulWidget {
   final Machine machine;
   final Function(Machine)? onActionPressed;
@@ -85,6 +88,16 @@ class _MachineCardState extends State<MachineCard> {
 
       if (remaining <= 0) {
         _reservationTimer?.cancel();
+
+        if (widget.machine.statut == MachineStatus.reservee) {
+          final machineProvider = context.read<MachineProvider>();
+          final userProvider = context.read<UserProvider>();
+          machineProvider.libererMachine(
+            machineId: widget.machine.id,
+            userProvider: userProvider,
+            notificationProvider: context.read<NotificationProvider>(),
+          );
+        }
       }
     });
   }
