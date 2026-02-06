@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equip_sight/components/button_login_signup.dart';
 import 'package:equip_sight/components/forms.dart';
 import 'package:equip_sight/components/role_router.dart';
-import 'package:equip_sight/components/social_login_button.dart';
 import 'package:equip_sight/components/title_app_design.dart';
 import 'package:equip_sight/constants.dart';
 import 'package:equip_sight/pages/forgot_password.dart';
+import 'package:equip_sight/pages/registration.dart';
 import 'package:equip_sight/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -235,60 +235,60 @@ class _LoginState extends State<Login> {
                           ),
 
                           SizedBox(height: 15),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SocialLoginButton(
-                                asset: 'assets/images/google.png',
-                                onTap: () async {
-                                  setState(() => showSpinner = true);
-                                  try {
-                                    final authService = AuthService();
-                                    final userCredential = await authService
-                                        .signInWithGoogle();
 
-                                    final user = userCredential.user;
-                                    if (user != null && context.mounted) {
-                                      final uid = user.uid;
-
-                                      final userDoc = await FirebaseFirestore
-                                          .instance
-                                          .collection('users')
-                                          .doc(uid)
-                                          .get();
-
-                                      if (!userDoc.exists) {
-                                        throw Exception(
-                                          'Пользователь не найден',
-                                        );
-                                      }
-
-                                      final userData = userDoc.data()!;
-                                      final role = userData['role'];
-
-                                      saveFcmToken();
-
-                                      if (context.mounted) {
-                                        navigateByRole(
-                                          context,
-                                          role,
-                                          universityId:
-                                              userData['universityId'],
-                                          countryId: userData['countryId'],
-                                          cityId: userData['cityId'],
-                                          dormId: userData['dormId'],
-                                        );
-                                      }
-                                    }
-                                  } catch (e) {
-                                    _showError(e.toString());
-                                  }
-                                  setState(() => showSpinner = false);
-                                },
-                              ),
-                            ],
-                          ),
-
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          //   children: [
+                          //     SocialLoginButton(
+                          //       asset: 'assets/images/google.png',
+                          //       onTap: () async {
+                          //         setState(() => showSpinner = true);
+                          //         try {
+                          //           final authService = AuthService();
+                          //           final userCredential = await authService
+                          //               .signInWithGoogle();
+                          //
+                          //           final user = userCredential.user;
+                          //           if (user != null && context.mounted) {
+                          //             final uid = user.uid;
+                          //
+                          //             final userDoc = await FirebaseFirestore
+                          //                 .instance
+                          //                 .collection('users')
+                          //                 .doc(uid)
+                          //                 .get();
+                          //
+                          //             if (!userDoc.exists) {
+                          //               throw Exception(
+                          //                 'Пользователь не найден',
+                          //               );
+                          //             }
+                          //
+                          //             final userData = userDoc.data()!;
+                          //             final role = userData['role'];
+                          //
+                          //             saveFcmToken();
+                          //
+                          //             if (context.mounted) {
+                          //               navigateByRole(
+                          //                 context,
+                          //                 role,
+                          //                 universityId:
+                          //                     userData['universityId'],
+                          //                 countryId: userData['countryId'],
+                          //                 cityId: userData['cityId'],
+                          //                 dormId: userData['dormId'],
+                          //               );
+                          //             }
+                          //           }
+                          //         } catch (e) {
+                          //           _showError(e.toString());
+                          //         }
+                          //         setState(() => showSpinner = false);
+                          //       },
+                          //     ),
+                          //   ],
+                          // ),
                           SizedBox(height: 8.0),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -330,7 +330,10 @@ class _LoginState extends State<Login> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.pop(context);
+                                      Navigator.pushNamed(
+                                        context,
+                                        Registration.id,
+                                      );
                                     },
                                     child: Text(
                                       ' Регистрация',
