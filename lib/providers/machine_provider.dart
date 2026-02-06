@@ -140,6 +140,7 @@ class MachineProvider with ChangeNotifier {
       await dormRef.collection('machines').doc(machineId).update({
         'statut': 'occupe',
         'utilisateurActuel': currentUser.displayName,
+        'utilisateurActuelUid': currentUser.id,
         'startTime': FieldValue.serverTimestamp(),
         'endTime': endTime,
         'lastUpdated': FieldValue.serverTimestamp(),

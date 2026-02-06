@@ -90,15 +90,13 @@ class _IndexPageState extends State<IndexPage> {
 
     try {
       final userProvider = context.read<UserProvider>();
-      final user = userProvider.currentUser;
+      final dormRef = userProvider.dormRef;
 
-      if (user == null || user.dormPath == null) {
-        throw Exception('DormPath introuvable');
+      if (dormRef == null) {
+        throw Exception('DormRef introuvable');
       }
 
-      await context.read<MachineProvider>().loadMachines(
-        user.dormPath as DocumentReference<Object?>,
-      );
+      await context.read<MachineProvider>().loadMachines(dormRef);
 
       if (!mounted) return;
 
@@ -468,27 +466,25 @@ class _IndexPageState extends State<IndexPage> {
         ),
         title: const TitleAppDesign(textTitle: 'EquipSight'),
         actions: [
+          _isRefreshing
+              ? const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                )
+              : IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: _refreshData,
+                  tooltip: 'Обновить',
+                ),
           Stack(
             children: [
-              _isRefreshing
-                  ? const Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                      ),
-                    )
-                  : IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: _refreshData,
-                      tooltip: 'Обновить',
-                    ),
               IconButton(
                 icon: const Icon(Icons.notifications),
                 onPressed: _showNotifications,
