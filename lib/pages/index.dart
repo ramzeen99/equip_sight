@@ -28,6 +28,7 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> {
   Timer? _timer;
+  bool _isRefreshing = false;
   bool _isCheckingAuth = true;
 
   @override
@@ -76,6 +77,49 @@ class _IndexPageState extends State<IndexPage> {
     } catch (e, stack) {
       debugPrint('Ошибка при инициализации данных: $e');
       debugPrintStack(stackTrace: stack);
+    }
+  }
+
+  Future<void> _refreshData() async {
+    final messenger = ScaffoldMessenger.of(context);
+    if (_isRefreshing) return;
+
+    setState(() {
+      _isRefreshing = true;
+    });
+
+    try {
+      final userProvider = context.read<UserProvider>();
+      final user = userProvider.currentUser;
+
+      if (user == null || user.dormPath == null) {
+        throw Exception('DormPath introuvable');
+      }
+
+      await context.read<MachineProvider>().loadMachines(
+        user.dormPath as DocumentReference<Object?>,
+      );
+
+      if (!mounted) return;
+
+      await Future.delayed(const Duration(milliseconds: 500));
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('✅ Данные обновлены'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('❌ Ошибка: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isRefreshing = false;
+        });
+      }
     }
   }
 
@@ -426,6 +470,25 @@ class _IndexPageState extends State<IndexPage> {
         actions: [
           Stack(
             children: [
+              _isRefreshing
+                  ? const Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      ),
+                    )
+                  : IconButton(
+                      icon: const Icon(Icons.refresh),
+                      onPressed: _refreshData,
+                      tooltip: 'Обновить',
+                    ),
               IconButton(
                 icon: const Icon(Icons.notifications),
                 onPressed: _showNotifications,
@@ -716,6 +779,11 @@ class _IndexPageState extends State<IndexPage> {
           const Text(
             'Нет доступных машин',
             style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          const SizedBox(height: 8),
+          ElevatedButton(
+            onPressed: _refreshData,
+            child: const Text('Попробовать снова'),
           ),
         ],
       ),

@@ -66,6 +66,38 @@ class MachineProvider with ChangeNotifier {
     });
   }
 
+  Future<void> loadMachines(DocumentReference dormRef) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final snapshot = await dormRef.collection('machines').get();
+
+      _machines = snapshot.docs.map((doc) {
+        final data = doc.data();
+
+        return Machine(
+          id: doc.id,
+          nom: data['name'] ?? '',
+          emplacement: data['emplacement'] ?? '',
+          statut: MachineStatus.values.byName(data['statut'] ?? 'libre'),
+          utilisateurActuel: data['utilisateurActuel'],
+          startTime: data['startTime'],
+          endTime: data['endTime'],
+          reservedByName: data['reservedByName'],
+          reservationEndTime: data['reservationEndTime'],
+        );
+      }).toList();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Erreur loadMachines: $e');
+      }
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
   Future<void> demarrerMachine({
     required String machineId,
     required UserProvider userProvider,
