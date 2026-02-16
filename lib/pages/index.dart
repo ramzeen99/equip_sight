@@ -222,6 +222,7 @@ class _IndexPageState extends State<IndexPage> {
 
   void _showStartDialog(Machine machine) {
     int selectedMinutes = 30;
+    const List<int> cycleDurations = [90, 60, 40, 30];
 
     showDialog(
       context: context,
@@ -239,11 +240,14 @@ class _IndexPageState extends State<IndexPage> {
                   DropdownButton<int>(
                     value: selectedMinutes,
                     isExpanded: true,
-                    items: const [
-                      DropdownMenuItem(value: 30, child: Text('30 минут')),
-                      DropdownMenuItem(value: 45, child: Text('45 минут')),
-                      DropdownMenuItem(value: 90, child: Text('90 минут')),
-                    ],
+                    items: cycleDurations
+                        .map(
+                          (m) => DropdownMenuItem(
+                            value: m,
+                            child: Text('$m минут'),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (value) {
                       if (value != null) {
                         setState(() => selectedMinutes = value);
